@@ -128,7 +128,7 @@ export const WelcomeModal: React.FC = () => {
           {/* Quick Choice: Select Mode to Enter */}
           <div className="w-full mt-6 space-y-2.5">
             <div className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider text-center">
-              Choose your persona to get started:
+              Choose your account type to get started:
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

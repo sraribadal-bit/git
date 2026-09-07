@@ -42,25 +42,25 @@ export const SkillLedgerModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
+        className="bg-white rounded-2xl sm:rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-200">
-              <Award className="w-5 h-5" />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-md shadow-emerald-200 shrink-0">
+              <Award className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-zinc-900">Punjab Skill Development Mission (PSDM)</h2>
-                <span className="text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">
-                  Govt. of Punjab • On-Chain Ledger
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900">PSDM Skill Ledger</h2>
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Govt. of Punjab Ledger
                 </span>
               </div>
-              <p className="text-xs text-zinc-500">
+              <p className="text-[11px] sm:text-xs text-zinc-500 line-clamp-1 sm:line-clamp-none">
                 Cryptographically validated NSQF-certified vocational competencies and candidate registry
               </p>
             </div>
@@ -68,14 +68,14 @@ export const SkillLedgerModal: React.FC = () => {
 
           <button
             onClick={() => setIsLedgerModalOpen(false)}
-            className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           
           {/* Left Column: Search & Candidate List */}
           <div className="lg:col-span-5 space-y-3">

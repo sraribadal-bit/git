@@ -36,7 +36,13 @@ export const EscrowSimulator: React.FC = () => {
     resetEscrowDemo,
     role,
     activeGig,
+    currentUser,
+    freelancer,
   } = useApp();
+
+  const freelancerUpi = ((currentUser?.email ? currentUser.email.split('@')[0] : freelancer.name.split(' ')[0]) || 'freelancer')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') + '@okhdfcbank';
 
   const [depositAmount, setDepositAmount] = useState<number>(15000);
   const [submissionNote, setSubmissionNote] = useState<string>(
@@ -74,42 +80,42 @@ export const EscrowSimulator: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
+        className="bg-white rounded-2xl sm:rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200">
-              <Lock className="w-5 h-5" />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200 shrink-0">
+              <Lock className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-zinc-900">Native UPI Milestone Escrow Simulator</h2>
-                <span className="text-[10px] font-mono uppercase font-bold bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900">Native UPI Milestone Escrow Simulator</h2>
+                <span className="text-[9px] sm:text-[10px] font-mono uppercase font-bold bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200">
                   TechPunjab Escrow Protocol
                 </span>
               </div>
-              <p className="text-xs text-zinc-500">
+              <p className="text-[11px] sm:text-xs text-zinc-500 line-clamp-1 sm:line-clamp-none">
                 Simulated 4-step secure contract lifecycle between Punjab MSME and Certified Trainee
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={resetEscrowDemo}
-              className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
               title="Reset Simulator"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
             <button
               onClick={() => setIsEscrowModalOpen(false)}
-              className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -117,7 +123,7 @@ export const EscrowSimulator: React.FC = () => {
         </div>
 
         {/* 4-Step Lifecycle Progress Tracker */}
-        <div className="px-6 py-4 bg-zinc-50/80 border-b border-zinc-100">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-zinc-50/80 border-b border-zinc-100">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             
             {/* Step 1 */}
@@ -200,7 +206,7 @@ export const EscrowSimulator: React.FC = () => {
         </div>
 
         {/* Modal Body: Active Lifecycle Actions */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
 
           {/* Current Status Alert Banner */}
           <div className={`p-4 rounded-2xl border flex items-center justify-between gap-4 ${
@@ -223,7 +229,7 @@ export const EscrowSimulator: React.FC = () => {
                 <div className="text-sm font-semibold mt-0.5">
                   {escrowStatus === 'ESCROW_LOCKED' && 'Funds are securely locked in Smart Escrow. Waiting for trainee deliverable submission.'}
                   {escrowStatus === 'WORK_SUBMITTED' && 'Deliverable submitted! Ready for client review and UPI release.'}
-                  {escrowStatus === 'DISBURSED_TO_FREELANCER' && 'Payment successfully disbursed to Freelancer UPI ID: gurpreet@okhdfcbank!'}
+                  {escrowStatus === 'DISBURSED_TO_FREELANCER' && `Payment successfully disbursed to Freelancer UPI ID: ${freelancerUpi}!`}
                   {escrowStatus === 'REVISION_REQUESTED' && 'Revision requested. Funds remain securely held in smart escrow contract.'}
                 </div>
               </div>
@@ -385,7 +391,7 @@ export const EscrowSimulator: React.FC = () => {
                       📦 {activeGig.milestones[1]?.title || 'Milestone 2: Real-Time Telemetry'}
                     </div>
                     <div className="mt-2 text-[11px] text-zinc-500">
-                      Destination UPI: <span className="font-mono font-semibold text-zinc-800">gurpreet@okhdfcbank</span>
+                      Destination UPI: <span className="font-mono font-semibold text-zinc-800">{freelancerUpi}</span>
                     </div>
                   </div>
 

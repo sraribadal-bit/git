@@ -42,7 +42,6 @@ export const EditProfileModal: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [avatar, setAvatar] = useState('');
-  const [customAvatarUrl, setCustomAvatarUrl] = useState('');
   
   // Freelancer specific
   const [title, setTitle] = useState('');
@@ -63,7 +62,7 @@ export const EditProfileModal: React.FC = () => {
     if (isProfileModalOpen) {
       const initialName = currentUser?.name || freelancer.name || '';
       const initialAvatar = currentUser?.avatar || freelancer.avatar || PRESET_AVATARS[0].url;
-      const initialEmail = currentUser?.email || (role === 'freelancer' ? 'gurpreet.dev@psdm.in' : 'client@techpunjab.in');
+      const initialEmail = currentUser?.email || (role === 'freelancer' ? 'gurpreet.dev@gmail.com' : 'client@techpunjab.in');
       
       setName(initialName);
       setAvatar(initialAvatar);
@@ -125,25 +124,25 @@ export const EditProfileModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-[32px] border border-zinc-200 shadow-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto flex flex-col"
+        className="bg-white rounded-2xl sm:rounded-[32px] border border-zinc-200 shadow-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
-              <User className="w-5 h-5" />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs shrink-0">
+              <User className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-zinc-900">Edit Custom Profile</h2>
-                <span className="text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900">Edit Custom Profile</h2>
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold bg-indigo-50 text-indigo-700 px-1.5 sm:px-2 py-0.5 rounded-full border border-indigo-200">
                   {role === 'freelancer' ? 'PSDM Freelancer' : 'MSME Client'}
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-[11px] sm:text-xs text-zinc-500 mt-0.5 line-clamp-1 sm:line-clamp-none">
                 Customize your public display name, avatar, bio & credentials
               </p>
             </div>
@@ -152,14 +151,14 @@ export const EditProfileModal: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsProfileModalOpen(false)}
-            className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Modal Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           
           {/* Section 1: Avatar Customization */}
           <div>
@@ -229,22 +228,6 @@ export const EditProfileModal: React.FC = () => {
                     <Upload className="w-3 h-3" />
                     <span>Upload</span>
                   </button>
-                </div>
-
-                {/* Custom URL Input */}
-                <div className="pt-1">
-                  <input
-                    type="url"
-                    placeholder="Or paste custom image URL (https://...)"
-                    value={customAvatarUrl}
-                    onChange={(e) => {
-                      setCustomAvatarUrl(e.target.value);
-                      if (e.target.value.startsWith('http')) {
-                        setAvatar(e.target.value);
-                      }
-                    }}
-                    className="w-full text-xs px-3 py-1.5 rounded-xl border border-zinc-200 bg-white text-zinc-800 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                  />
                 </div>
               </div>
             </div>

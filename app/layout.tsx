@@ -1,10 +1,17 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AppProvider } from '@/context/AppContext';
 
 export const metadata: Metadata = {
   title: 'TechPunjab | Smart Freelance & MSME Platform (Govt. of Punjab)',
   description: 'Next-generation freelance platform connecting PSDM-certified vocational trainees and skilled developers directly with MSMEs. Powered by TechPunjab, Govt. of Punjab.',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -15,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 

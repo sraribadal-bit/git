@@ -9,15 +9,17 @@ import {
   Mail, 
   KeyRound, 
   ArrowRight, 
-  ArrowLeft,
-  LogIn,
-  UserPlus,
-  Check,
-  Eye,
-  EyeOff
+  LogIn, 
+  UserPlus, 
+  Check, 
+  Eye, 
+  EyeOff,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
-import { INITIAL_FREELANCER } from '@/data/mockData';
+import { INITIAL_FREELANCER, deriveNameFromEmail } from '@/data/mockData';
 import { ThreeDBackground } from '@/components/ThreeDBackground';
+import { supabase } from '@/lib/supabase';
 
 function LoginContent() {
   const router = useRouter();
@@ -28,8 +30,8 @@ function LoginContent() {
   const [authRole, setAuthRole] = useState<'freelancer' | 'client'>('freelancer');
   
   // Sign in state
-  const [email, setEmail] = useState('gurpreet.dev@psdm.in');
-  const [password, setPassword] = useState('techpunjab@2024');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [candidateId, setCandidateId] = useState('PB-PSDM-2024-AI-89421');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -42,91 +44,157 @@ function LoginContent() {
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false);
 
-  // Sync email default placeholder when role switches
+  // Common async UI state
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Clear inputs when role switches so placeholders remain visible
   const handleRoleChange = (newRole: 'freelancer' | 'client') => {
     setAuthRole(newRole);
-    if (authType === 'signin') {
-      if (newRole === 'freelancer') {
-        setEmail('gurpreet.dev@psdm.in');
-        setCandidateId('PB-PSDM-2024-AI-89421');
-      } else {
-        setEmail('harjit@amritsarafro.com');
-      }
-    }
+    setEmail('');
+    setPassword('');
+    setErrorMessage(null);
   };
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedUserStr = localStorage.getItem('techpunjab_user');
-      const savedRole = localStorage.getItem('techpunjab_role');
-      if (savedUserStr || currentUser) {
-        const activeRole = currentUser?.role || savedRole;
-        if (activeRole === 'freelancer') {
-          router.replace('/freelancer/dashboard');
-        } else if (activeRole === 'client') {
-          router.replace('/client/dashboard');
-        }
-      }
-    }
-  }, [currentUser, router]);
-
-  const handleSignInSubmit = (e: React.FormEvent) => {
+  const handleSignInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    let accountName = authRole === 'freelancer' ? INITIAL_FREELANCER.name : 'Harjit Chawla';
-    if (typeof window !== 'undefined') {
-      try {
-        const savedAccounts = JSON.parse(localStorage.getItem('techpunjab_accounts') || '[]');
-        const matched = savedAccounts.find((acc: any) => acc.email?.toLowerCase() === email.toLowerCase());
-        if (matched?.name) {
-          accountName = matched.name;
+    setErrorMessage(null);
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setErrorMessage('Please enter your email address.');
+      showToast('⚠️ Please enter your email address.');
+      return;
+    }
+
+    if (!password) {
+      setErrorMessage('Please enter your password.');
+      showToast('⚠️ Please enter your password.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Trigger Supabase Auth signInWithPassword
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
+        password: password,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        showToast(`❌ Sign in failed: ${error.message}`);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        const metadataRole = data.user.user_metadata?.role as ('freelancer' | 'client') | undefined;
+        const targetRole = metadataRole || authRole;
+        const displayName = data.user.user_metadata?.full_name || deriveNameFromEmail(trimmedEmail);
+
+        loginUser(targetRole, displayName, trimmedEmail);
+
+        showToast(`🎉 Logged in successfully as ${displayName}!`);
+
+        if (targetRole === 'freelancer') {
+          router.push('/freelancer/dashboard');
         } else {
-          const lastUser = JSON.parse(localStorage.getItem('techpunjab_user') || 'null');
-          if (lastUser?.name) {
-            accountName = lastUser.name;
-          }
+          router.push('/client/dashboard');
         }
-      } catch (err) {
-        console.error(err);
+      } else {
+        setErrorMessage('Unable to retrieve user session. Please try again.');
+        showToast('⚠️ Sign in incomplete.');
       }
-    }
-
-    if (authRole === 'freelancer') {
-      loginUser('freelancer', accountName, email);
-      router.push('/freelancer/dashboard');
-    } else {
-      loginUser('client', accountName, email);
-      router.push('/client/dashboard');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'An unexpected error occurred during sign in.');
+      showToast(`❌ Error: ${err.message || 'Sign in failed'}`);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSignUpSubmit = (e: React.FormEvent) => {
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+
+    if (signupPassword.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      showToast('⚠️ Password must be at least 6 characters.');
+      return;
+    }
+
     if (signupPassword !== signupConfirmPassword) {
+      setErrorMessage('Passwords do not match. Please verify your password.');
       showToast('⚠️ Passwords do not match. Please verify your password.');
       return;
     }
-    const displayName = name.trim() || (authRole === 'freelancer' ? 'Simranjit Kaur' : 'Punjab Agro Works Pvt Ltd');
-    const registeredEmail = signupEmail.trim() || (authRole === 'freelancer' ? 'candidate@techpunjab.in' : 'contact@punjabagro.com');
-    
-    signUpUser(authRole, displayName, registeredEmail, trade);
 
-    if (authRole === 'freelancer') {
-      router.push('/freelancer/dashboard');
-    } else {
-      router.push('/client/dashboard');
+    const registeredEmail = signupEmail.trim();
+    if (!registeredEmail) {
+      setErrorMessage('Please enter a valid email address.');
+      showToast('⚠️ Please enter your email address.');
+      return;
+    }
+
+    const displayName = name.trim() || deriveNameFromEmail(registeredEmail);
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: registeredEmail,
+        password: signupPassword,
+        options: {
+          data: {
+            full_name: displayName,
+            role: authRole,
+            trade: authRole === 'freelancer' ? trade : undefined,
+          },
+        },
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        showToast(`❌ Sign up failed: ${error.message}`);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        signUpUser(authRole, displayName, registeredEmail, trade);
+
+        if (data.session) {
+          showToast(`🎉 Account created! Welcome, ${displayName}!`);
+        } else {
+          showToast(`🎉 Account created! Unique ID: ${data.user.id.slice(0, 8)}...`);
+        }
+
+        if (authRole === 'freelancer') {
+          router.push('/freelancer/dashboard');
+        } else {
+          router.push('/client/dashboard');
+        }
+      } else {
+        setErrorMessage('Unable to register user. Please try again.');
+        showToast('⚠️ Registration incomplete.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'An unexpected error occurred during sign up.');
+      showToast(`❌ Error: ${err.message || 'Sign up failed'}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900 overflow-hidden">
+    <div className="min-h-screen relative flex flex-col justify-between p-3 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden w-full">
       {/* Interactive 3D Canvas Background */}
       <ThreeDBackground />
 
       {/* Top Header */}
-      <div className="max-w-5xl mx-auto w-full flex items-center justify-between relative z-10">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-11 h-11 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 p-0.5 shadow-md shadow-zinc-200/50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+      <div className="max-w-5xl mx-auto w-full flex items-center justify-between relative z-10 px-1">
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 p-0.5 shadow-md shadow-zinc-200/50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
             <img
               src="/techpunjab-logo.png"
               alt="TechPunjab Logo"
@@ -134,38 +202,30 @@ function LoginContent() {
             />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-extrabold text-base sm:text-lg text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
               <span className="text-[10px] uppercase font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-200 backdrop-blur-xs">
                 Govt. of Punjab
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 font-medium">Role-Based Smart Authentication Portal</p>
+            <p className="text-[9px] sm:text-[10px] text-zinc-500 font-medium">Role-Based Smart Authentication Portal</p>
           </div>
-        </Link>
-
-        <Link
-          href="/"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-md border border-white/80 text-zinc-700 hover:bg-white flex items-center gap-1.5 transition-colors shadow-sm"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Home</span>
         </Link>
       </div>
 
       {/* Main Login / Signup Card */}
-      <div className="max-w-lg mx-auto w-full my-6 relative z-10">
-        <div className="bento-card p-6 sm:p-8 border border-white/80 shadow-2xl rounded-[32px] bg-white/85 backdrop-blur-xl">
+      <div className="max-w-lg mx-auto w-full my-3 sm:my-6 relative z-10 px-0 sm:px-0">
+        <div className="bento-card p-4 sm:p-8 border border-white/80 shadow-2xl rounded-2xl sm:rounded-[32px] bg-white/90 backdrop-blur-xl">
           
-          <div className="text-center mb-5">
-            <div className="w-14 h-14 rounded-full bg-white/95 border border-zinc-200/80 shadow-sm p-1 flex items-center justify-center mx-auto mb-3 backdrop-blur-xs">
+          <div className="text-center mb-4 sm:mb-5">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/95 border border-zinc-200/80 shadow-sm p-1 flex items-center justify-center mx-auto mb-2.5 sm:mb-3 backdrop-blur-xs">
               <img
                 src="/techpunjab-logo.png"
                 alt="TechPunjab Emblem"
                 className="w-full h-full object-contain"
               />
             </div>
-            <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-zinc-900 tracking-tight">
               {authType === 'signin' ? 'Sign In to TechPunjab' : 'Join TechPunjab (Sign Up)'}
             </h1>
             <p className="text-xs text-zinc-500 mt-1">
@@ -205,7 +265,7 @@ function LoginContent() {
           {/* Role Selection UI */}
           <div className="mb-5">
             <label className="text-xs font-bold text-zinc-800 block text-center mb-2">
-              Select Your Account Type / Persona:
+              Select Your Account Type:
             </label>
             <RoleSelector
               selectedRole={authRole}
@@ -226,11 +286,10 @@ function LoginContent() {
                     <Mail className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
                     <input
                       type="email"
-                      required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder={authRole === 'freelancer' ? 'e.g., gurpreet.dev@psdm.in' : 'e.g., harjit@amritsarafro.com'}
-                      className="w-full pl-9 pr-3 py-2 text-xs font-medium rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      placeholder="gmail.com"
+                      className="w-full pl-9 pr-3 py-2 text-xs font-medium rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-zinc-400"
                     />
                   </div>
                 </div>
@@ -243,11 +302,10 @@ function LoginContent() {
                     <KeyRound className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      className="w-full pl-9 pr-10 py-2 text-xs font-mono rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      placeholder="Password"
+                      className="w-full pl-9 pr-10 py-2 text-xs font-mono rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-zinc-400"
                     />
                     <button
                       type="button"
@@ -264,12 +322,29 @@ function LoginContent() {
                   </div>
                 </div>
 
+                {errorMessage && (
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                    <span className="leading-snug">{errorMessage}</span>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2"
+                  disabled={loading}
+                  className="w-full py-3 sm:py-2.5 min-h-[44px] rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2"
                 >
-                  <span>Sign In as {authRole === 'freelancer' ? 'Freelancer' : 'MSME Client'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Signing in to Supabase...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Sign In as {authRole === 'freelancer' ? 'Freelancer' : 'MSME Client'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </>
+                  )}
                 </button>
               </form>
             </div>
@@ -384,12 +459,29 @@ function LoginContent() {
                 )}
               </div>
 
+              {errorMessage && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                  <span className="leading-snug">{errorMessage}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2"
+                disabled={loading}
+                className="w-full py-3 sm:py-2.5 min-h-[44px] rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2"
               >
-                <Check className="w-3.5 h-3.5" />
-                <span>Create {authRole === 'freelancer' ? 'Freelancer' : 'MSME Client'} Account & Continue</span>
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Creating Account in Supabase...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Create {authRole === 'freelancer' ? 'Freelancer' : 'MSME Client'} Account & Continue</span>
+                  </>
+                )}
               </button>
             </form>
           )}

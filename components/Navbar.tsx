@@ -38,26 +38,26 @@ export const Navbar: React.FC = () => {
   } = useApp();
 
   return (
-    <header className="sticky top-4 z-40 px-2 sm:px-4 lg:px-6 max-w-7xl mx-auto w-full transition-all">
-      <nav className="glass-pill rounded-full pl-3 sm:pl-4 pr-3 sm:pr-4 py-2 shadow-bento flex items-center justify-between border border-zinc-200/80 gap-1.5 sm:gap-3 w-full">
+    <header className="sticky top-2 sm:top-4 z-40 px-2 sm:px-4 lg:px-6 max-w-7xl mx-auto w-full transition-all">
+      <nav className="glass-pill rounded-full pl-2.5 sm:pl-4 pr-2 sm:pr-4 py-1.5 sm:py-2 shadow-bento flex items-center justify-between border border-zinc-200/80 gap-1 sm:gap-3 w-full">
         
         {/* Brand Logo & Tag (Clicking pops up welcome window) */}
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <button 
             onClick={() => setActiveTab('dashboard')}
-            className="flex items-center gap-2 group text-left"
+            className="flex items-center gap-1.5 sm:gap-2 group text-left"
             title="Go to TechPunjab Dashboard"
           >
-            <div className="w-9 h-9 rounded-2xl bg-white border border-zinc-200/80 p-0.5 shadow-md shadow-zinc-200/60 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl sm:rounded-2xl bg-white border border-zinc-200/80 p-0.5 shadow-md shadow-zinc-200/60 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
               <img
                 src="/techpunjab-logo.png"
                 alt="TechPunjab Logo"
-                className="w-full h-full object-contain rounded-xl"
+                className="w-full h-full object-contain rounded-lg sm:rounded-xl"
               />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-base sm:text-lg tracking-tight text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
+                <span className="font-extrabold text-sm sm:text-base md:text-lg tracking-tight text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
                 <span className="hidden xl:inline-flex text-[10px] uppercase font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 items-center gap-1 whitespace-nowrap shrink-0">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                   Govt. of Punjab
@@ -146,7 +146,7 @@ export const Navbar: React.FC = () => {
             <>
               {/* Active Role Status Badge (Read-only, assigned at login/signup) */}
               <div 
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold shrink-0 border ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold shrink-0 border ${
                   role === 'freelancer'
                     ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
                     : 'bg-emerald-50 border-emerald-200 text-emerald-800'
@@ -155,13 +155,13 @@ export const Navbar: React.FC = () => {
               >
                 {role === 'freelancer' ? (
                   <>
-                    <User className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                    <span>Freelancer</span>
+                    <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-indigo-600 shrink-0" />
+                    <span className="hidden xs:inline sm:inline">Freelancer</span>
                   </>
                 ) : (
                   <>
-                    <Building2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                    <span>MSME / Client</span>
+                    <Building2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-700 shrink-0" />
+                    <span className="hidden xs:inline sm:inline">MSME</span>
                   </>
                 )}
               </div>
@@ -170,7 +170,7 @@ export const Navbar: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center gap-1.5 p-1 pr-2.5 rounded-full bg-white hover:bg-indigo-50/50 border border-zinc-200/90 hover:border-indigo-300 shadow-xs shrink-0 transition-all group cursor-pointer"
+                className="flex items-center gap-1 sm:gap-1.5 p-0.5 sm:p-1 pr-1.5 sm:pr-2.5 rounded-full bg-white hover:bg-indigo-50/50 border border-zinc-200/90 hover:border-indigo-300 shadow-xs shrink-0 transition-all group cursor-pointer"
                 title={`Logged in as ${currentUser.name} (${currentUser.email}) • Click to Edit Profile`}
               >
                 <div className="relative">
@@ -195,7 +195,7 @@ export const Navbar: React.FC = () => {
                   logoutUser();
                   window.location.href = '/login';
                 }}
-                className="p-2 rounded-full bg-zinc-100 hover:bg-rose-50 text-zinc-500 hover:text-rose-600 border border-zinc-200 hover:border-rose-200 transition-colors shrink-0"
+                className="p-1.5 sm:p-2 rounded-full bg-zinc-100 hover:bg-rose-50 text-zinc-500 hover:text-rose-600 border border-zinc-200 hover:border-rose-200 transition-colors shrink-0"
                 title="Log Out of TechPunjab"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -222,6 +222,54 @@ export const Navbar: React.FC = () => {
         </div>
 
       </nav>
+
+      {/* Mobile Floating Bottom Bar for Tab Navigation */}
+      {currentUser && (
+        <div className="md:hidden fixed bottom-3 inset-x-3 z-40 max-w-sm mx-auto">
+          <div className="glass-pill rounded-full p-1 shadow-2xl border border-zinc-200/90 flex items-center justify-around bg-white/95 backdrop-blur-xl">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full text-[10px] font-bold transition-all ${
+                activeTab === 'dashboard'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-900'
+              }`}
+            >
+              <Layers className="w-4 h-4" />
+              <span>Dashboard</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('explore')}
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full text-[10px] font-bold transition-all ${
+                activeTab === 'explore'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-900'
+              }`}
+            >
+              <Search className="w-4 h-4" />
+              <span>Explore</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('workspace')}
+              className={`flex flex-col items-center justify-center py-1.5 px-3 rounded-full text-[10px] font-bold transition-all ${
+                activeTab === 'workspace'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-900'
+              }`}
+            >
+              <Briefcase className="w-4 h-4" />
+              <span>Workspace</span>
+            </button>
+            <button
+              onClick={() => setIsEscrowModalOpen(true)}
+              className="flex flex-col items-center justify-center py-1.5 px-3 rounded-full text-[10px] font-bold text-zinc-500 hover:text-zinc-900 transition-all"
+            >
+              <Lock className="w-4 h-4 text-emerald-600" />
+              <span>Escrow</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Global Edit Profile Modal */}
       <EditProfileModal />

@@ -21,7 +21,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { INITIAL_FREELANCER } from '@/data/mockData';
+import { INITIAL_FREELANCER, deriveNameFromEmail } from '@/data/mockData';
 
 export const LoginModal: React.FC = () => {
   const router = useRouter();
@@ -58,7 +58,7 @@ export const LoginModal: React.FC = () => {
 
   const handleQuickLogin = (role: 'freelancer' | 'client') => {
     if (role === 'freelancer') {
-      loginUser('freelancer', INITIAL_FREELANCER.name, 'gurpreet.dev@psdm.in');
+      loginUser('freelancer', INITIAL_FREELANCER.name, 'gurpreet.dev@gmail.com');
       setIsLoginModalOpen(false);
       router.push('/freelancer/dashboard');
     } else {
@@ -70,30 +70,36 @@ export const LoginModal: React.FC = () => {
 
   const handleSignInSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    let accountName = authRole === 'freelancer' ? INITIAL_FREELANCER.name : 'Harjit Chawla';
+    const trimmedEmail = email.trim();
+    const finalEmail = trimmedEmail || (authRole === 'freelancer' ? 'gurpreet.dev@gmail.com' : 'harjit@amritsarafro.com');
+    let accountName = '';
+
     if (typeof window !== 'undefined') {
       try {
         const savedAccounts = JSON.parse(localStorage.getItem('techpunjab_accounts') || '[]');
-        const matched = savedAccounts.find((acc: any) => acc.email?.toLowerCase() === (email || '').toLowerCase());
+        const matched = savedAccounts.find((acc: any) => acc.email?.toLowerCase() === finalEmail.toLowerCase());
         if (matched?.name) {
           accountName = matched.name;
-        } else {
-          const lastUser = JSON.parse(localStorage.getItem('techpunjab_user') || 'null');
-          if (lastUser?.name) {
-            accountName = lastUser.name;
-          }
         }
       } catch (err) {
         console.error(err);
       }
     }
 
+    if (!accountName) {
+      if (!trimmedEmail) {
+        accountName = authRole === 'freelancer' ? INITIAL_FREELANCER.name : 'Harjit Chawla';
+      } else {
+        accountName = deriveNameFromEmail(trimmedEmail);
+      }
+    }
+
     if (authRole === 'freelancer') {
-      loginUser('freelancer', accountName, email || 'gurpreet.dev@psdm.in');
+      loginUser('freelancer', accountName, finalEmail);
       setIsLoginModalOpen(false);
       router.push('/freelancer/dashboard');
     } else {
-      loginUser('client', accountName, email || 'harjit@amritsarafro.com');
+      loginUser('client', accountName, finalEmail);
       setIsLoginModalOpen(false);
       router.push('/client/dashboard');
     }
@@ -105,8 +111,9 @@ export const LoginModal: React.FC = () => {
       showToast('⚠️ Passwords do not match. Please verify your password.');
       return;
     }
-    const displayName = signUpName.trim() || (authRole === 'freelancer' ? 'New Trainee' : 'New MSME Employer');
-    signUpUser(authRole, displayName, signUpEmail || (authRole === 'freelancer' ? 'candidate@techpunjab.in' : 'client@techpunjab.in'), signUpTrade);
+    const finalEmail = signUpEmail.trim() || (authRole === 'freelancer' ? 'candidate@techpunjab.in' : 'client@techpunjab.in');
+    const displayName = signUpName.trim() || deriveNameFromEmail(finalEmail);
+    signUpUser(authRole, displayName, finalEmail, signUpTrade);
     setIsLoginModalOpen(false);
     router.push(authRole === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard');
   };
@@ -197,7 +204,7 @@ export const LoginModal: React.FC = () => {
               onChange={(newRole) => {
                 setAuthRole(newRole);
                 if (newRole === 'freelancer') {
-                  setEmail('gurpreet.dev@psdm.in');
+                  setEmail('gurpreet.dev@gmail.com');
                 } else {
                   setEmail('harjit@amritsarafro.com');
                 }

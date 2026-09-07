@@ -8,16 +8,9 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth_token')?.value;
   const isAuthenticated = Boolean(token && role);
 
-  // 1. Root route ('/'): STRICTLY COMPULSORY LOGIN!
+  // 1. Root route ('/'): ALWAYS redirect directly to /login first!
   if (pathname === '/') {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-    if (role === 'freelancer') {
-      return NextResponse.redirect(new URL('/freelancer/dashboard', request.url));
-    } else if (role === 'client') {
-      return NextResponse.redirect(new URL('/client/dashboard', request.url));
-    }
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   // 2. Protect /freelancer/* routes: Only authenticated freelancers allowed
@@ -41,17 +34,6 @@ export function middleware(request: NextRequest) {
     }
     if (role !== 'client') {
       return NextResponse.redirect(new URL('/freelancer/dashboard', request.url));
-    }
-  }
-
-  // 4. Authenticated users visiting /login or /signup go directly to their dashboard
-  if (pathname === '/login' || pathname === '/signup') {
-    if (isAuthenticated) {
-      if (role === 'freelancer') {
-        return NextResponse.redirect(new URL('/freelancer/dashboard', request.url));
-      } else if (role === 'client') {
-        return NextResponse.redirect(new URL('/client/dashboard', request.url));
-      }
     }
   }
 

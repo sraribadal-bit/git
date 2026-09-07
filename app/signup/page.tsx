@@ -14,9 +14,13 @@ import {
   UserPlus, 
   Eye, 
   EyeOff,
-  Sparkles
+  Sparkles,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import { ThreeDBackground } from '@/components/ThreeDBackground';
+import { deriveNameFromEmail } from '@/data/mockData';
+import { supabase } from '@/lib/supabase';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -30,49 +34,90 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedUserStr = localStorage.getItem('techpunjab_user');
-      const savedRole = localStorage.getItem('techpunjab_role');
-      if (savedUserStr || currentUser) {
-        const activeRole = currentUser?.role || savedRole;
-        if (activeRole === 'freelancer') {
-          router.replace('/freelancer/dashboard');
-        } else if (activeRole === 'client') {
-          router.replace('/client/dashboard');
-        }
-      }
-    }
-  }, [currentUser, router]);
-
-  const handleSignUpSubmit = (e: React.FormEvent) => {
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+
+    if (password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters long.');
+      showToast('⚠️ Password must be at least 6 characters.');
+      return;
+    }
+
     if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match. Please verify your password.');
       showToast('⚠️ Passwords do not match. Please verify your password.');
       return;
     }
-    const displayName = name.trim() || (authRole === 'freelancer' ? 'New PSDM Candidate' : 'New MSME Enterprise');
-    const registeredEmail = email.trim() || (authRole === 'freelancer' ? 'candidate@techpunjab.in' : 'contact@enterprise.com');
-    
-    signUpUser(authRole, displayName, registeredEmail, trade);
 
-    if (authRole === 'freelancer') {
-      router.push('/freelancer/dashboard');
-    } else {
-      router.push('/client/dashboard');
+    const registeredEmail = email.trim();
+    if (!registeredEmail) {
+      setErrorMessage('Please enter a valid email address.');
+      showToast('⚠️ Please enter your email address.');
+      return;
+    }
+
+    const displayName = name.trim() || deriveNameFromEmail(registeredEmail);
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: registeredEmail,
+        password: password,
+        options: {
+          data: {
+            full_name: displayName,
+            role: authRole,
+            trade: authRole === 'freelancer' ? trade : undefined,
+          },
+        },
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        showToast(`❌ Sign up failed: ${error.message}`);
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        signUpUser(authRole, displayName, registeredEmail, trade);
+
+        if (data.session) {
+          showToast(`🎉 Account created! Welcome, ${displayName}!`);
+        } else {
+          showToast(`🎉 Account created! Unique ID: ${data.user.id.slice(0, 8)}...`);
+        }
+
+        if (authRole === 'freelancer') {
+          router.push('/freelancer/dashboard');
+        } else {
+          router.push('/client/dashboard');
+        }
+      } else {
+        setErrorMessage('Unable to register user. Please try again.');
+        showToast('⚠️ Registration incomplete.');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'An unexpected error occurred during signup.');
+      showToast(`❌ Error: ${err.message || 'Signup failed'}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900 overflow-hidden">
+    <div className="min-h-screen relative flex flex-col justify-between p-3 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden w-full">
       {/* Interactive 3D Canvas Background */}
       <ThreeDBackground />
 
       {/* Top Header */}
-      <div className="max-w-5xl mx-auto w-full flex items-center justify-between relative z-10">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-11 h-11 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 p-0.5 shadow-md shadow-zinc-200/50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+      <div className="max-w-5xl mx-auto w-full flex items-center justify-between relative z-10 px-1 gap-2">
+        <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 p-0.5 shadow-md shadow-zinc-200/50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
             <img
               src="/techpunjab-logo.png"
               alt="TechPunjab Logo"
@@ -80,37 +125,37 @@ export default function SignUpPage() {
             />
           </div>
           <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-extrabold text-base sm:text-lg text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
               <span className="text-[10px] uppercase font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-200 backdrop-blur-xs">
                 Govt. of Punjab
               </span>
             </div>
-            <p className="text-[10px] text-zinc-500 font-medium">Create Verified Account</p>
+            <p className="text-[9px] sm:text-[10px] text-zinc-500 font-medium">Create Verified Account</p>
           </div>
         </Link>
 
         <Link
           href="/login"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-md border border-white/80 text-zinc-700 hover:bg-white flex items-center gap-1.5 transition-colors shadow-sm"
+          className="px-2.5 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-white/90 backdrop-blur-md border border-white/80 text-zinc-700 hover:bg-white flex items-center gap-1 sm:gap-1.5 transition-colors shadow-sm shrink-0"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Already registered? Sign In</span>
+          <ArrowLeft className="w-3.5 h-3.5 shrink-0" />
+          <span className="hidden xs:inline sm:inline">Already registered? </span><span>Sign In</span>
         </Link>
       </div>
 
       {/* Main Signup Card */}
-      <div className="max-w-lg mx-auto w-full my-6 relative z-10">
-        <div className="bento-card p-6 sm:p-8 border border-white/80 shadow-2xl rounded-[32px] bg-white/85 backdrop-blur-xl">
-          <div className="text-center mb-5">
-            <div className="w-14 h-14 rounded-full bg-white/95 border border-zinc-200/80 shadow-sm p-1 flex items-center justify-center mx-auto mb-3 backdrop-blur-xs">
+      <div className="max-w-lg mx-auto w-full my-3 sm:my-6 relative z-10 px-0 sm:px-0">
+        <div className="bento-card p-4 sm:p-8 border border-white/80 shadow-2xl rounded-2xl sm:rounded-[32px] bg-white/90 backdrop-blur-xl">
+          <div className="text-center mb-4 sm:mb-5">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/95 border border-zinc-200/80 shadow-sm p-1 flex items-center justify-center mx-auto mb-2.5 sm:mb-3 backdrop-blur-xs">
               <img
                 src="/techpunjab-logo.png"
                 alt="TechPunjab Emblem"
                 className="w-full h-full object-contain"
               />
             </div>
-            <h1 className="text-2xl font-extrabold text-zinc-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-zinc-900 tracking-tight">
               Create TechPunjab Account
             </h1>
             <p className="text-xs text-zinc-500 mt-1">
@@ -121,7 +166,7 @@ export default function SignUpPage() {
           {/* Role Selector */}
           <div className="mb-5">
             <label className="text-xs font-bold text-zinc-800 block text-center mb-2">
-              Choose Your Persona:
+              Choose Your Account Type:
             </label>
             <RoleSelector
               selectedRole={authRole}
@@ -237,12 +282,29 @@ export default function SignUpPage() {
               )}
             </div>
 
+            {errorMessage && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                <span className="leading-snug">{errorMessage}</span>
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2"
+              disabled={loading}
+              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 mt-2"
             >
-              <Check className="w-3.5 h-3.5" />
-              <span>Register as {authRole === 'freelancer' ? 'Freelancer' : 'MSME Client'} & Continue</span>
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Creating Account in Supabase...</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Register as {authRole === 'freelancer' ? 'Freelancer' : 'MSME Client'} & Continue</span>
+                </>
+              )}
             </button>
           </form>
 

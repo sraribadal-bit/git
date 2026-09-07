@@ -153,26 +153,26 @@ export const AIScoperModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
+        className="bg-white rounded-2xl sm:rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="px-6 py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-pink-200">
-              <Sparkles className="w-5 h-5" />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-zinc-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur z-20">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-pink-500 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-pink-200 shrink-0">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-zinc-900">AI Project Scope & Bid Generator</h2>
-                <span className="text-[10px] font-mono font-bold bg-pink-50 text-pink-700 px-2 py-0.5 rounded-full border border-pink-200">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900">AI Project Scope & Bid Generator</h2>
+                <span className="text-[9px] sm:text-[10px] font-mono font-bold bg-pink-50 text-pink-700 px-2 py-0.5 rounded-full border border-pink-200">
                   Gemini Flash 1.5
                 </span>
               </div>
-              <p className="text-xs text-zinc-500">
+              <p className="text-[11px] sm:text-xs text-zinc-500 line-clamp-1 sm:line-clamp-none">
                 Decompose unrefined project ideas into verified milestones and instant tailored pitches
               </p>
             </div>
@@ -180,41 +180,41 @@ export const AIScoperModal: React.FC = () => {
 
           <button
             onClick={() => setIsScoperModalOpen(false)}
-            className="p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Sub Navigation: Client Scoper vs Freelancer Proposal */}
-        <div className="px-6 pt-3 pb-0 bg-zinc-50/70 border-b border-zinc-100 flex items-center gap-2">
+        <div className="px-4 sm:px-6 pt-3 pb-0 bg-zinc-50/70 border-b border-zinc-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveSubTab('client_scope')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+            className={`pb-3 px-2.5 sm:px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               activeSubTab === 'client_scope'
                 ? 'border-indigo-600 text-indigo-700'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800'
             }`}
           >
             <Building className="w-3.5 h-3.5" />
-            <span>Client Side: Project & Milestone Scoper</span>
+            <span>Client: Milestone Scoper</span>
           </button>
 
           <button
             onClick={() => setActiveSubTab('freelancer_pitch')}
-            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+            className={`pb-3 px-2.5 sm:px-3 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               activeSubTab === 'freelancer_pitch'
                 ? 'border-pink-600 text-pink-700'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800'
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
-            <span>Freelancer Side: Tailored Pitch Generator</span>
+            <span>Freelancer: Pitch Generator</span>
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
 
           {activeSubTab === 'client_scope' ? (
             <>

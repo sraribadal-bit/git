@@ -294,3 +294,17 @@ export const PSDM_VERIFIED_LEDGER: PSDMCertification[] = [
     status: 'VERIFIED',
   }
 ];
+
+export function deriveNameFromEmail(rawEmail: string): string {
+  if (!rawEmail || !rawEmail.includes('@')) return 'User';
+  const prefix = rawEmail.split('@')[0];
+  const cleaned = prefix.replace(/[._\-+]/g, ' ').replace(/\d+/g, ' ').trim();
+  const nameToUse = cleaned || prefix.replace(/[._\-+]/g, ' ').trim();
+  if (!nameToUse) return 'User';
+  return nameToUse
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+

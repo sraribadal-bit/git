@@ -15,8 +15,18 @@ import {
   INITIAL_FREELANCER, 
   INITIAL_GIGS, 
   INITIAL_KANBAN_TASKS, 
-  PSDM_VERIFIED_LEDGER 
+  PSDM_VERIFIED_LEDGER,
+  deriveNameFromEmail 
 } from '@/data/mockData';
+
+const hashString = (str: string): number => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
 
 interface AppContextType {
   role: UserRole;
@@ -170,33 +180,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setCookie('user_role', resolvedRole);
         setCookie('auth_token', 'tp_session_active');
 
+        // Check if custom freelancer profile details were saved for this specific user
+        const savedFreelancerStr = localStorage.getItem('techpunjab_freelancer_profile');
+        let customProfile: FreelancerProfile | null = null;
+        if (savedFreelancerStr) {
+          try {
+            const parsedFreelancer = JSON.parse(savedFreelancerStr);
+            if (!parsedUser.name || parsedFreelancer.name === parsedUser.name || parsedFreelancer.email === parsedUser.email) {
+              customProfile = parsedFreelancer;
+            }
+          } catch (e) {
+            console.error('Failed to parse saved freelancer profile', e);
+          }
+        }
+
         if (parsedUser.name && (resolvedRole === 'freelancer' || parsedUser.role === 'freelancer')) {
-          setFreelancer((prev) => ({
-            ...prev,
+          const baseProfile = customProfile || INITIAL_FREELANCER;
+          setFreelancer({
+            ...baseProfile,
             name: parsedUser.name,
-            avatar: parsedUser.avatar || prev.avatar,
-            certifications: prev.certifications.map((c) => ({
+            avatar: parsedUser.avatar || baseProfile.avatar,
+            certifications: (baseProfile.certifications || INITIAL_FREELANCER.certifications).map((c) => ({
               ...c,
               candidateName: parsedUser.name,
             })),
-          }));
+          });
           setLedger((prev) =>
             prev.map((c, i) => (i < 2 ? { ...c, candidateName: parsedUser.name } : c))
           );
           setKanbanTasks((prev) =>
             prev.map((t) => ({ ...t, assignee: parsedUser.name }))
           );
-        }
-
-        // Also check if custom freelancer profile details were saved
-        const savedFreelancerStr = localStorage.getItem('techpunjab_freelancer_profile');
-        if (savedFreelancerStr) {
-          try {
-            const parsedFreelancer = JSON.parse(savedFreelancerStr);
-            setFreelancer(parsedFreelancer);
-          } catch (e) {
-            console.error('Failed to parse saved freelancer profile', e);
-          }
+        } else if (customProfile) {
+          setFreelancer(customProfile);
         }
       } else {
         // Fallback: check cookie
@@ -215,36 +231,51 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setRole(newRole);
     let userData;
     if (newRole === 'freelancer') {
-      const finalName = customName || INITIAL_FREELANCER.name;
+      const isDefaultMock = !email || email.toLowerCase() === 'gurpreet.dev@gmail.com';
+      const finalEmail = email ? email.trim() : 'gurpreet.dev@gmail.com';
+      const finalName = customName?.trim() || (isDefaultMock ? INITIAL_FREELANCER.name : deriveNameFromEmail(finalEmail));
+      
       userData = {
         name: finalName,
         role: 'freelancer' as UserRole,
         avatar: INITIAL_FREELANCER.avatar,
-        email: email || 'gurpreet.dev@psdm.in',
-        psdmId: 'PB-PSDM-2024-AI-89421',
+        email: finalEmail,
+        psdmId: `PB-PSDM-2024-${hashString(finalEmail).toString().slice(0, 5)}`,
         tradeOrIndustry: 'Full Stack & Generative AI',
       };
-      setFreelancer((prev) => ({
-        ...prev,
+
+      const newFreelancerProfile: FreelancerProfile = {
+        ...INITIAL_FREELANCER,
         name: finalName,
-        certifications: prev.certifications.map((c) => ({
+        handle: `@${finalEmail.split('@')[0]}`,
+        certifications: INITIAL_FREELANCER.certifications.map((c) => ({
           ...c,
           candidateName: finalName,
         })),
-      }));
+      };
+
+      setFreelancer(newFreelancerProfile);
       setLedger((prev) =>
         prev.map((c, i) => (i < 2 ? { ...c, candidateName: finalName } : c))
       );
       setKanbanTasks((prev) =>
         prev.map((t) => ({ ...t, assignee: finalName }))
       );
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('techpunjab_freelancer_profile', JSON.stringify(newFreelancerProfile));
+      }
     } else {
+      const isDefaultMock = !email || email.toLowerCase() === 'harjit@amritsarafro.com';
+      const finalEmail = email ? email.trim() : 'harjit@amritsarafro.com';
+      const finalName = customName?.trim() || (isDefaultMock ? 'Harjit Chawla' : deriveNameFromEmail(finalEmail));
+
       userData = {
-        name: customName || 'Harjit Chawla',
+        name: finalName,
         role: 'client' as UserRole,
         avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-        email: email || 'harjit@amritsarafro.com',
-        psdmId: 'PB-MSME-2024-9182',
+        email: finalEmail,
+        psdmId: `PB-MSME-2024-${hashString(finalEmail).toString().slice(0, 4)}`,
         gstin: '03AABCA1234F1Z8',
         tradeOrIndustry: 'Agri-Tech & Machinery Cluster',
       };
@@ -264,13 +295,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const signUpUser = (newRole: UserRole, name: string, email: string, tradeOrIndustry?: string) => {
     setRole(newRole);
+    const finalEmail = email ? email.trim() : (newRole === 'freelancer' ? 'candidate@techpunjab.in' : 'client@techpunjab.in');
+    const finalName = name.trim() || deriveNameFromEmail(finalEmail);
+    
     const newUserData = {
-      name,
+      name: finalName,
       role: newRole,
       avatar: newRole === 'freelancer' 
         ? INITIAL_FREELANCER.avatar 
         : 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-      email,
+      email: finalEmail,
       psdmId: newRole === 'freelancer' ? `PB-PSDM-${Date.now().toString().slice(-5)}` : undefined,
       gstin: newRole === 'client' ? `03PB${Date.now().toString().slice(-7)}` : undefined,
       tradeOrIndustry: tradeOrIndustry || (newRole === 'freelancer' ? 'Software & AI' : 'Industrial Services'),
@@ -278,20 +312,25 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setCurrentUser(newUserData);
     if (newRole === 'freelancer') {
-      setFreelancer((prev) => ({
-        ...prev,
-        name: name,
-        certifications: prev.certifications.map((c) => ({
+      const newFreelancerProfile: FreelancerProfile = {
+        ...INITIAL_FREELANCER,
+        name: finalName,
+        handle: `@${finalEmail.split('@')[0]}`,
+        certifications: INITIAL_FREELANCER.certifications.map((c) => ({
           ...c,
-          candidateName: name,
+          candidateName: finalName,
         })),
-      }));
+      };
+      setFreelancer(newFreelancerProfile);
       setLedger((prev) =>
-        prev.map((c, i) => (i < 2 ? { ...c, candidateName: name } : c))
+        prev.map((c, i) => (i < 2 ? { ...c, candidateName: finalName } : c))
       );
       setKanbanTasks((prev) =>
-        prev.map((t) => ({ ...t, assignee: name }))
+        prev.map((t) => ({ ...t, assignee: finalName }))
       );
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('techpunjab_freelancer_profile', JSON.stringify(newFreelancerProfile));
+      }
     }
     setCookie('user_role', newRole);
     setCookie('auth_token', `tp_token_${Date.now()}`);
@@ -309,7 +348,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
 
     setIsLoginModalOpen(false);
-    showToast(`🎉 Welcome to TechPunjab, ${name}! Account created as ${newRole === 'freelancer' ? 'Freelancer' : 'MSME / Client'}.`);
+    showToast(`🎉 Welcome to TechPunjab, ${finalName}! Account created as ${newRole === 'freelancer' ? 'Freelancer' : 'MSME / Client'}.`);
   };
 
   const updateProfile = (data: {
