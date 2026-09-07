@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: techpunjab
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.16.0
+      - key: HOST
+        value: 0.0.0.0
