@@ -15,8 +15,10 @@ import {
   User,
   Building2,
   LogIn,
-  LogOut
+  LogOut,
+  Pencil
 } from 'lucide-react';
+import { EditProfileModal } from '@/components/EditProfileModal';
 
 export const Navbar: React.FC = () => {
   const { 
@@ -29,6 +31,7 @@ export const Navbar: React.FC = () => {
     setIsLedgerModalOpen,
     setIsWelcomeModalOpen,
     setIsLoginModalOpen,
+    setIsProfileModalOpen,
     currentUser,
     logoutUser,
     escrowAmount
@@ -163,20 +166,28 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
 
-              {/* User Profile Pill */}
-              <div
-                className="flex items-center gap-1.5 p-1 pr-3 rounded-full bg-white border border-zinc-200/90 shadow-xs shrink-0"
-                title={`Logged in as ${currentUser.name} (${currentUser.email})`}
+              {/* User Profile Pill (Clickable to Edit Custom Profile) */}
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center gap-1.5 p-1 pr-2.5 rounded-full bg-white hover:bg-indigo-50/50 border border-zinc-200/90 hover:border-indigo-300 shadow-xs shrink-0 transition-all group cursor-pointer"
+                title={`Logged in as ${currentUser.name} (${currentUser.email}) • Click to Edit Profile`}
               >
-                <img
-                  src={currentUser.avatar}
-                  alt={currentUser.name}
-                  className="w-6 h-6 rounded-full object-cover border border-zinc-200 shrink-0"
-                />
-                <span className="hidden sm:inline text-[11px] font-bold text-zinc-800">
+                <div className="relative">
+                  <img
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                    className="w-6 h-6 rounded-full object-cover border border-zinc-200 shrink-0 group-hover:scale-105 transition-transform"
+                  />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-indigo-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="w-1.5 h-1.5" />
+                  </div>
+                </div>
+                <span className="hidden sm:inline text-[11px] font-bold text-zinc-800 group-hover:text-indigo-600 transition-colors">
                   {currentUser.name.split(' ')[0]}
                 </span>
-              </div>
+                <Pencil className="w-3 h-3 text-zinc-400 group-hover:text-indigo-600 transition-colors ml-0.5 hidden sm:inline" />
+              </button>
 
               {/* Logout Button */}
               <button
@@ -211,6 +222,9 @@ export const Navbar: React.FC = () => {
         </div>
 
       </nav>
+
+      {/* Global Edit Profile Modal */}
+      <EditProfileModal />
     </header>
   );
 };

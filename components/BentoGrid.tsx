@@ -20,22 +20,27 @@ import {
   Briefcase,
   Layers,
   FileCheck,
-  Check
+  Check,
+  Pencil
 } from 'lucide-react';
 
 export const BentoGrid: React.FC = () => {
   const { 
     role, 
     freelancer, 
+    currentUser,
     activeGig, 
     setIsEscrowModalOpen, 
     setIsLedgerModalOpen,
     openQuickBid,
     setIsScoperModalOpen,
+    setIsProfileModalOpen,
     escrowStatus,
     showToast,
     setActiveTab
   } = useApp();
+
+  const freelancerName = (role === 'freelancer' && currentUser?.name) ? currentUser.name : freelancer.name;
 
   const [copiedHash, setCopiedHash] = React.useState(false);
 
@@ -46,7 +51,10 @@ export const BentoGrid: React.FC = () => {
     setTimeout(() => setCopiedHash(false), 2000);
   };
 
-  const primaryCert = freelancer.certifications[0];
+  const primaryCert = {
+    ...freelancer.certifications[0],
+    candidateName: freelancerName,
+  };
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -64,7 +72,7 @@ export const BentoGrid: React.FC = () => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 mt-1">
             {role === 'freelancer' ? (
-              <>Welcome back, <span className="text-indigo-600">{freelancer.name.split(' ')[0]}</span> 👋</>
+              <>Welcome back, <span className="text-indigo-600">{freelancerName.split(' ')[0]}</span> 👋</>
             ) : (
               <>Industry Talent Hub & <span className="text-indigo-600">Smart Escrow</span></>
             )}
@@ -101,8 +109,8 @@ export const BentoGrid: React.FC = () => {
               <div className="relative">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl p-0.5 bg-gradient-to-tr from-indigo-500 via-pink-500 to-emerald-400 shadow-md group-hover:rotate-1 transition-transform">
                   <img
-                    src={freelancer.avatar}
-                    alt={freelancer.name}
+                    src={currentUser?.avatar || freelancer.avatar}
+                    alt={freelancerName}
                     className="w-full h-full object-cover rounded-[14px]"
                   />
                 </div>
@@ -113,7 +121,7 @@ export const BentoGrid: React.FC = () => {
 
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-lg sm:text-xl font-bold text-zinc-900">{freelancer.name}</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-zinc-900">{freelancerName}</h2>
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">
                     <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
                     PSDM Accredited
@@ -128,13 +136,24 @@ export const BentoGrid: React.FC = () => {
               </div>
             </div>
 
-            <button 
-              onClick={() => setActiveTab('explore')}
-              className="text-zinc-400 hover:text-zinc-700 p-1.5 rounded-xl hover:bg-zinc-100 transition-colors"
-              title="View Public Profile"
-            >
-              <ArrowUpRight className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button 
+                type="button"
+                onClick={() => setIsProfileModalOpen(true)}
+                className="text-zinc-400 hover:text-indigo-600 p-1.5 rounded-xl hover:bg-indigo-50 transition-colors"
+                title="Edit Custom Profile"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+              <button 
+                type="button"
+                onClick={() => setActiveTab('explore')}
+                className="text-zinc-400 hover:text-zinc-700 p-1.5 rounded-xl hover:bg-zinc-100 transition-colors"
+                title="View Public Profile"
+              >
+                <ArrowUpRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {/* Interactive Skill Tags */}

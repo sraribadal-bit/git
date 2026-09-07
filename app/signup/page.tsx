@@ -16,6 +16,7 @@ import {
   EyeOff,
   Sparkles
 } from 'lucide-react';
+import { ThreeDBackground } from '@/components/ThreeDBackground';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -64,11 +65,14 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col justify-between p-4 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen relative flex flex-col justify-between p-4 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900 overflow-hidden">
+      {/* Interactive 3D Canvas Background */}
+      <ThreeDBackground />
+
       {/* Top Header */}
-      <div className="max-w-5xl mx-auto w-full flex items-center justify-between">
+      <div className="max-w-5xl mx-auto w-full flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-11 h-11 rounded-2xl bg-white border border-zinc-200 p-0.5 shadow-md shadow-zinc-200/50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-white/90 backdrop-blur-md border border-white/80 p-0.5 shadow-md shadow-zinc-200/50 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform shrink-0">
             <img
               src="/techpunjab-logo.png"
               alt="TechPunjab Logo"
@@ -78,7 +82,7 @@ export default function SignUpPage() {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-lg text-zinc-900 group-hover:text-emerald-700 transition-colors">TechPunjab</span>
-              <span className="text-[10px] uppercase font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+              <span className="text-[10px] uppercase font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-100/90 text-emerald-800 border border-emerald-200 backdrop-blur-xs">
                 Govt. of Punjab
               </span>
             </div>
@@ -88,7 +92,7 @@ export default function SignUpPage() {
 
         <Link
           href="/login"
-          className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-50 flex items-center gap-1.5 transition-colors shadow-sm"
+          className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/90 backdrop-blur-md border border-white/80 text-zinc-700 hover:bg-white flex items-center gap-1.5 transition-colors shadow-sm"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Already registered? Sign In</span>
@@ -96,10 +100,10 @@ export default function SignUpPage() {
       </div>
 
       {/* Main Signup Card */}
-      <div className="max-w-lg mx-auto w-full my-6">
-        <div className="bento-card p-6 sm:p-8 border border-zinc-200/90 shadow-bento rounded-[32px] bg-white">
+      <div className="max-w-lg mx-auto w-full my-6 relative z-10">
+        <div className="bento-card p-6 sm:p-8 border border-white/80 shadow-2xl rounded-[32px] bg-white/85 backdrop-blur-xl">
           <div className="text-center mb-5">
-            <div className="w-14 h-14 rounded-full bg-white border border-zinc-200 shadow-sm p-1 flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-full bg-white/95 border border-zinc-200/80 shadow-sm p-1 flex items-center justify-center mx-auto mb-3 backdrop-blur-xs">
               <img
                 src="/techpunjab-logo.png"
                 alt="TechPunjab Emblem"
@@ -255,7 +259,7 @@ export default function SignUpPage() {
       </div>
 
       {/* Footer */}
-      <div className="max-w-5xl mx-auto w-full text-center text-xs text-zinc-400">
+      <div className="max-w-5xl mx-auto w-full text-center text-xs text-zinc-500 font-medium relative z-10">
         Govt. of Punjab • Punjab Skill Development Mission • TechPunjab Official Portal
       </div>
     </div>

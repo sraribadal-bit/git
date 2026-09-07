@@ -59,11 +59,13 @@ interface AppContextType {
   // Project Scoper
   addNewProject: (newGig: GigProject) => void;
 
-  // Auth & Welcome
+  // Auth & Welcome & Profile
   isWelcomeModalOpen: boolean;
   setIsWelcomeModalOpen: (open: boolean) => void;
   isLoginModalOpen: boolean;
   setIsLoginModalOpen: (open: boolean) => void;
+  isProfileModalOpen: boolean;
+  setIsProfileModalOpen: (open: boolean) => void;
   currentUser: {
     name: string;
     role: UserRole;
@@ -75,6 +77,18 @@ interface AppContextType {
   } | null;
   loginUser: (role: UserRole, customName?: string, email?: string) => void;
   signUpUser: (role: UserRole, name: string, email: string, tradeOrIndustry?: string) => void;
+  updateProfile: (data: {
+    name: string;
+    avatar?: string;
+    email?: string;
+    title?: string;
+    location?: string;
+    hourlyRate?: number;
+    bio?: string;
+    skills?: string[];
+    tradeOrIndustry?: string;
+    gstin?: string;
+  }) => void;
   logoutUser: () => void;
 
   // Notification / Toast
@@ -114,7 +128,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [gigs, setGigs] = useState<GigProject[]>(INITIAL_GIGS);
   const [activeGig, setActiveGig] = useState<GigProject>(INITIAL_GIGS[0]);
   const [kanbanTasks, setKanbanTasks] = useState<KanbanTask[]>(INITIAL_KANBAN_TASKS);
-  const [ledger] = useState<PSDMCertification[]>(PSDM_VERIFIED_LEDGER);
+  const [ledger, setLedger] = useState<PSDMCertification[]>(PSDM_VERIFIED_LEDGER);
 
   // Escrow Simulator State
   const [escrowStatus, setEscrowStatus] = useState<EscrowStatus>('ESCROW_LOCKED');
@@ -124,6 +138,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Modals state
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isEscrowModalOpen, setIsEscrowModalOpen] = useState(false);
   const [isScoperModalOpen, setIsScoperModalOpen] = useState(false);
   const [isQuickBidOpen, setIsQuickBidOpen] = useState(false);
@@ -154,6 +169,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setRoleState(resolvedRole);
         setCookie('user_role', resolvedRole);
         setCookie('auth_token', 'tp_session_active');
+
+        if (parsedUser.name && (resolvedRole === 'freelancer' || parsedUser.role === 'freelancer')) {
+          setFreelancer((prev) => ({
+            ...prev,
+            name: parsedUser.name,
+            avatar: parsedUser.avatar || prev.avatar,
+            certifications: prev.certifications.map((c) => ({
+              ...c,
+              candidateName: parsedUser.name,
+            })),
+          }));
+          setLedger((prev) =>
+            prev.map((c, i) => (i < 2 ? { ...c, candidateName: parsedUser.name } : c))
+          );
+          setKanbanTasks((prev) =>
+            prev.map((t) => ({ ...t, assignee: parsedUser.name }))
+          );
+        }
+
+        // Also check if custom freelancer profile details were saved
+        const savedFreelancerStr = localStorage.getItem('techpunjab_freelancer_profile');
+        if (savedFreelancerStr) {
+          try {
+            const parsedFreelancer = JSON.parse(savedFreelancerStr);
+            setFreelancer(parsedFreelancer);
+          } catch (e) {
+            console.error('Failed to parse saved freelancer profile', e);
+          }
+        }
       } else {
         // Fallback: check cookie
         const match = document.cookie.match(new RegExp('(^| )user_role=([^;]+)'));
@@ -171,14 +215,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setRole(newRole);
     let userData;
     if (newRole === 'freelancer') {
+      const finalName = customName || INITIAL_FREELANCER.name;
       userData = {
-        name: customName || INITIAL_FREELANCER.name,
+        name: finalName,
         role: 'freelancer' as UserRole,
         avatar: INITIAL_FREELANCER.avatar,
         email: email || 'gurpreet.dev@psdm.in',
         psdmId: 'PB-PSDM-2024-AI-89421',
         tradeOrIndustry: 'Full Stack & Generative AI',
       };
+      setFreelancer((prev) => ({
+        ...prev,
+        name: finalName,
+        certifications: prev.certifications.map((c) => ({
+          ...c,
+          candidateName: finalName,
+        })),
+      }));
+      setLedger((prev) =>
+        prev.map((c, i) => (i < 2 ? { ...c, candidateName: finalName } : c))
+      );
+      setKanbanTasks((prev) =>
+        prev.map((t) => ({ ...t, assignee: finalName }))
+      );
     } else {
       userData = {
         name: customName || 'Harjit Chawla',
@@ -218,6 +277,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setCurrentUser(newUserData);
+    if (newRole === 'freelancer') {
+      setFreelancer((prev) => ({
+        ...prev,
+        name: name,
+        certifications: prev.certifications.map((c) => ({
+          ...c,
+          candidateName: name,
+        })),
+      }));
+      setLedger((prev) =>
+        prev.map((c, i) => (i < 2 ? { ...c, candidateName: name } : c))
+      );
+      setKanbanTasks((prev) =>
+        prev.map((t) => ({ ...t, assignee: name }))
+      );
+    }
     setCookie('user_role', newRole);
     setCookie('auth_token', `tp_token_${Date.now()}`);
     if (typeof window !== 'undefined') {
@@ -237,13 +312,83 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast(`🎉 Welcome to TechPunjab, ${name}! Account created as ${newRole === 'freelancer' ? 'Freelancer' : 'MSME / Client'}.`);
   };
 
+  const updateProfile = (data: {
+    name: string;
+    avatar?: string;
+    email?: string;
+    title?: string;
+    location?: string;
+    hourlyRate?: number;
+    bio?: string;
+    skills?: string[];
+    tradeOrIndustry?: string;
+    gstin?: string;
+  }) => {
+    const trimmedName = data.name.trim();
+
+    setCurrentUser((prev) => {
+      if (!prev) return null;
+      const updatedUser = {
+        ...prev,
+        name: trimmedName || prev.name,
+        avatar: data.avatar || prev.avatar,
+        email: data.email?.trim() || prev.email,
+        tradeOrIndustry: data.tradeOrIndustry || prev.tradeOrIndustry,
+        gstin: data.gstin || prev.gstin,
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('techpunjab_user', JSON.stringify(updatedUser));
+      }
+      return updatedUser;
+    });
+
+    if (role === 'freelancer' || currentUser?.role === 'freelancer') {
+      setFreelancer((prev) => {
+        const updatedFreelancer: FreelancerProfile = {
+          ...prev,
+          name: trimmedName || prev.name,
+          avatar: data.avatar || prev.avatar,
+          title: data.title?.trim() || prev.title,
+          location: data.location?.trim() || prev.location,
+          hourlyRate: data.hourlyRate !== undefined ? data.hourlyRate : prev.hourlyRate,
+          bio: data.bio !== undefined ? data.bio : prev.bio,
+          skills: data.skills && data.skills.length > 0 ? data.skills : prev.skills,
+          certifications: prev.certifications.map((c) => ({
+            ...c,
+            candidateName: trimmedName || prev.name,
+          })),
+        };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('techpunjab_freelancer_profile', JSON.stringify(updatedFreelancer));
+        }
+        return updatedFreelancer;
+      });
+
+      if (trimmedName) {
+        setLedger((prev) =>
+          prev.map((c, i) => (i < 2 ? { ...c, candidateName: trimmedName } : c))
+        );
+        setKanbanTasks((prev) =>
+          prev.map((t) => ({ ...t, assignee: trimmedName }))
+        );
+      }
+    }
+
+    setIsProfileModalOpen(false);
+    showToast('✨ Profile updated successfully!');
+  };
+
   const logoutUser = () => {
     setCurrentUser(null);
+    setFreelancer(INITIAL_FREELANCER);
+    setLedger(PSDM_VERIFIED_LEDGER);
+    setKanbanTasks(INITIAL_KANBAN_TASKS);
     deleteCookie('user_role');
     deleteCookie('auth_token');
     if (typeof window !== 'undefined') {
       localStorage.removeItem('techpunjab_user');
       localStorage.removeItem('techpunjab_role');
+      localStorage.removeItem('techpunjab_freelancer_profile');
     }
     showToast('👋 You have been logged out.');
   };
@@ -435,9 +580,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsWelcomeModalOpen,
         isLoginModalOpen,
         setIsLoginModalOpen,
+        isProfileModalOpen,
+        setIsProfileModalOpen,
         currentUser,
         loginUser,
         signUpUser,
+        updateProfile,
         logoutUser,
         toastMessage,
         showToast,

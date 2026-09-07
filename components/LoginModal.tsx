@@ -70,12 +70,30 @@ export const LoginModal: React.FC = () => {
 
   const handleSignInSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    let accountName = authRole === 'freelancer' ? INITIAL_FREELANCER.name : 'Harjit Chawla';
+    if (typeof window !== 'undefined') {
+      try {
+        const savedAccounts = JSON.parse(localStorage.getItem('techpunjab_accounts') || '[]');
+        const matched = savedAccounts.find((acc: any) => acc.email?.toLowerCase() === (email || '').toLowerCase());
+        if (matched?.name) {
+          accountName = matched.name;
+        } else {
+          const lastUser = JSON.parse(localStorage.getItem('techpunjab_user') || 'null');
+          if (lastUser?.name) {
+            accountName = lastUser.name;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     if (authRole === 'freelancer') {
-      loginUser('freelancer', 'Gurpreet Singh', email || 'gurpreet.dev@psdm.in');
+      loginUser('freelancer', accountName, email || 'gurpreet.dev@psdm.in');
       setIsLoginModalOpen(false);
       router.push('/freelancer/dashboard');
     } else {
-      loginUser('client', 'Harjit Chawla', email || 'harjit@amritsarafro.com');
+      loginUser('client', accountName, email || 'harjit@amritsarafro.com');
       setIsLoginModalOpen(false);
       router.push('/client/dashboard');
     }
