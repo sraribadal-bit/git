@@ -1,35 +1,27 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { RoleSelector } from '@/components/RoleSelector';
 import { 
-  ShieldCheck, 
-  User, 
-  Building2, 
-  Lock, 
   Mail, 
   KeyRound, 
   ArrowRight, 
   ArrowLeft,
-  Sparkles,
-  CheckCircle2,
-  Award,
   LogIn,
   UserPlus,
   Check,
   Eye,
-  EyeOff,
-  Zap
+  EyeOff
 } from 'lucide-react';
 import { INITIAL_FREELANCER } from '@/data/mockData';
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { currentUser, role, loginUser, signUpUser, showToast } = useApp();
+  const { currentUser, loginUser, signUpUser, showToast } = useApp();
 
   const [authType, setAuthType] = useState<'signin' | 'signup'>('signin');
   const [authRole, setAuthRole] = useState<'freelancer' | 'client'>('freelancer');
@@ -107,11 +99,8 @@ export default function LoginPage() {
     }
   };
 
-
-
   return (
     <div className="min-h-screen bg-canvas flex flex-col justify-between p-4 sm:p-6 lg:p-8 selection:bg-indigo-100 selection:text-indigo-900">
-      
       {/* Top Header */}
       <div className="max-w-5xl mx-auto w-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -191,7 +180,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Role Selection UI: Shifted directly onto Login / Sign-up form */}
+          {/* Role Selection UI */}
           <div className="mb-5">
             <label className="text-xs font-bold text-zinc-800 block text-center mb-2">
               Select Your Account Type / Persona:
@@ -310,7 +299,6 @@ export default function LoginPage() {
                 </div>
               )}
 
-
               <div>
                 <label className="text-xs font-semibold text-zinc-700 block mb-1">
                   Create Account Password
@@ -384,8 +372,6 @@ export default function LoginPage() {
             </form>
           )}
 
-
-
           {/* Bottom Switch link */}
           <div className="pt-4 text-center text-xs text-zinc-500 border-t border-zinc-100 mt-4">
             {authType === 'signin' ? (
@@ -422,5 +408,13 @@ export default function LoginPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-zinc-500 font-medium text-sm">Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

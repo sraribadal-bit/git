@@ -1,15 +1,5 @@
-'use client';
 
-import React from 'react';
-import { 
-  ShieldCheck, 
-  Lock, 
-  Sparkles, 
-  Award, 
-  CheckCircle2, 
-  Building2, 
-  User, 
-  ArrowRight,
+
   Zap,
   Globe,
   Coins,
