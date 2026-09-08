@@ -18,16 +18,22 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowe
 
   useEffect(() => {
     // Check localStorage and cookies
-    const savedUserStr = localStorage.getItem('techpunjab_user');
-    const savedRole = localStorage.getItem('techpunjab_role') as UserRole | null;
+    const savedUserStr = typeof window !== 'undefined' ? localStorage.getItem('techpunjab_user') : null;
+    const savedRole = typeof window !== 'undefined' ? (localStorage.getItem('techpunjab_role') as UserRole | null) : null;
+    const hasSessionCookie = typeof document !== 'undefined' && Boolean(
+      document.cookie.match(new RegExp('(^| )techpunjab_user_session=([^;]+)')) ||
+      document.cookie.match(new RegExp('(^| )auth_token=([^;]+)'))
+    );
+    const cookieRoleMatch = typeof document !== 'undefined' ? document.cookie.match(new RegExp('(^| )user_role=([^;]+)')) : null;
+    const cookieRole = cookieRoleMatch ? (decodeURIComponent(cookieRoleMatch[2]) as UserRole) : null;
 
-    if (!savedUserStr && !currentUser) {
+    if (!savedUserStr && !currentUser && !hasSessionCookie) {
       // Not logged in -> redirect to login
       router.replace('/login');
       return;
     }
 
-    const currentActiveRole = currentUser?.role || savedRole || role;
+    const currentActiveRole = currentUser?.role || savedRole || cookieRole || role;
     if (currentActiveRole !== allowedRole) {
       // Role mismatch -> redirect to their correct dashboard
       if (currentActiveRole === 'freelancer') {

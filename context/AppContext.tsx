@@ -18,6 +18,7 @@ import {
   PSDM_VERIFIED_LEDGER,
   deriveNameFromEmail 
 } from '@/data/mockData';
+import { supabase } from '@/lib/supabase';
 
 const hashString = (str: string): number => {
   let hash = 0;
@@ -170,15 +171,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
+      // Check if OAuth callback set a session cookie
+      const sessionCookieMatch = document.cookie.match(new RegExp('(^| )techpunjab_user_session=([^;]+)'));
+      let oauthUser: any = null;
+      if (sessionCookieMatch && sessionCookieMatch[2]) {
+        try {
+          oauthUser = JSON.parse(decodeURIComponent(sessionCookieMatch[2]));
+        } catch (e) {
+          console.error('Failed to parse techpunjab_user_session cookie', e);
+        }
+      }
+
       const savedUserStr = localStorage.getItem('techpunjab_user');
       const savedRole = localStorage.getItem('techpunjab_role') as UserRole | null;
-      if (savedUserStr) {
-        const parsedUser = JSON.parse(savedUserStr);
-        setCurrentUser(parsedUser);
-        const resolvedRole = parsedUser.role || savedRole || 'freelancer';
+      const effectiveUser = savedUserStr ? JSON.parse(savedUserStr) : oauthUser;
+
+      if (effectiveUser) {
+        setCurrentUser(effectiveUser);
+        const resolvedRole = effectiveUser.role || savedRole || 'freelancer';
         setRoleState(resolvedRole);
         setCookie('user_role', resolvedRole);
         setCookie('auth_token', 'tp_session_active');
+        if (!savedUserStr && oauthUser) {
+          localStorage.setItem('techpunjab_user', JSON.stringify(effectiveUser));
+          localStorage.setItem('techpunjab_role', resolvedRole);
+        }
 
         // Check if custom freelancer profile details were saved for this specific user
         const savedFreelancerStr = localStorage.getItem('techpunjab_freelancer_profile');
@@ -186,7 +203,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (savedFreelancerStr) {
           try {
             const parsedFreelancer = JSON.parse(savedFreelancerStr);
-            if (!parsedUser.name || parsedFreelancer.name === parsedUser.name || parsedFreelancer.email === parsedUser.email) {
+            if (!effectiveUser.name || parsedFreelancer.name === effectiveUser.name || parsedFreelancer.email === effectiveUser.email) {
               customProfile = parsedFreelancer;
             }
           } catch (e) {
@@ -194,22 +211,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
         }
 
-        if (parsedUser.name && (resolvedRole === 'freelancer' || parsedUser.role === 'freelancer')) {
+        if (effectiveUser.name && (resolvedRole === 'freelancer' || effectiveUser.role === 'freelancer')) {
           const baseProfile = customProfile || INITIAL_FREELANCER;
           setFreelancer({
             ...baseProfile,
-            name: parsedUser.name,
-            avatar: parsedUser.avatar || baseProfile.avatar,
+            name: effectiveUser.name,
+            avatar: effectiveUser.avatar || baseProfile.avatar,
             certifications: (baseProfile.certifications || INITIAL_FREELANCER.certifications).map((c) => ({
               ...c,
-              candidateName: parsedUser.name,
+              candidateName: effectiveUser.name,
             })),
           });
           setLedger((prev) =>
-            prev.map((c, i) => (i < 2 ? { ...c, candidateName: parsedUser.name } : c))
+            prev.map((c, i) => (i < 2 ? { ...c, candidateName: effectiveUser.name } : c))
           );
           setKanbanTasks((prev) =>
-            prev.map((t) => ({ ...t, assignee: parsedUser.name }))
+            prev.map((t) => ({ ...t, assignee: effectiveUser.name }))
           );
         } else if (customProfile) {
           setFreelancer(customProfile);
@@ -225,6 +242,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     } catch (e) {
       console.error('Failed to load saved session', e);
     }
+  }, []);
+
+  // Listen to Supabase Auth state changes for real-time OAuth session sync
+  React.useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const savedUserStr = typeof window !== 'undefined' ? localStorage.getItem('techpunjab_user') : null;
+        if (!savedUserStr) {
+          const u = session.user;
+          const roleCookie = typeof document !== 'undefined' ? document.cookie.match(new RegExp('(^| )user_role=([^;]+)'))?.[2] : null;
+          const targetRole = (roleCookie ? decodeURIComponent(roleCookie) : (u.user_metadata?.role || 'freelancer')) as UserRole;
+          const displayName = u.user_metadata?.full_name || u.user_metadata?.name || deriveNameFromEmail(u.email || '');
+          loginUser(targetRole, displayName, u.email);
+        }
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, []);
 
   const loginUser = (newRole: UserRole, customName?: string, email?: string) => {
