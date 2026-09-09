@@ -23,7 +23,11 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export const EscrowSimulator: React.FC = () => {
+interface EscrowSimulatorProps {
+  inline?: boolean;
+}
+
+export const EscrowSimulator: React.FC<EscrowSimulatorProps> = ({ inline = false }) => {
   const {
     isEscrowModalOpen,
     setIsEscrowModalOpen,
@@ -55,7 +59,7 @@ export const EscrowSimulator: React.FC = () => {
   const [showUpiQr, setShowUpiQr] = useState<boolean>(false);
   const [isProcessingDisbursement, setIsProcessingDisbursement] = useState<boolean>(false);
 
-  if (!isEscrowModalOpen) return null;
+  if (!inline && !isEscrowModalOpen) return null;
 
   const triggerCelebration = () => {
     try {
@@ -80,9 +84,9 @@ export const EscrowSimulator: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className={inline ? "w-full max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6" : "fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-zinc-950/60 backdrop-blur-sm animate-in fade-in duration-200"}>
       <div 
-        className="bg-white rounded-2xl sm:rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"
+        className={inline ? "bg-white rounded-2xl sm:rounded-[28px] border border-zinc-200/80 shadow-xs w-full overflow-hidden flex flex-col" : "bg-white rounded-2xl sm:rounded-[28px] border border-zinc-200/80 shadow-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto flex flex-col"}
         onClick={(e) => e.stopPropagation()}
       >
         
@@ -113,12 +117,14 @@ export const EscrowSimulator: React.FC = () => {
             >
               <RefreshCw className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setIsEscrowModalOpen(false)}
-              className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            {!inline && (
+              <button
+                onClick={() => setIsEscrowModalOpen(false)}
+                className="p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
 

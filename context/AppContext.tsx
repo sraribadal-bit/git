@@ -86,7 +86,7 @@ interface AppContextType {
     gstin?: string;
     tradeOrIndustry?: string;
   } | null;
-  loginUser: (role: UserRole, customName?: string, email?: string) => void;
+  loginUser: (role: UserRole, customName?: string, email?: string, customAvatar?: string) => void;
   signUpUser: (role: UserRole, name: string, email: string, tradeOrIndustry?: string) => void;
   updateProfile: (data: {
     name: string;
@@ -167,94 +167,142 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     tradeOrIndustry?: string;
   } | null>(null);
 
-  // Initialize session from localStorage or cookies on mount
+  // Initialize session from Supabase Auth, cookies, or localStorage on mount
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Purge any stale mock Gurpreet Singh from browser localStorage
     try {
-      // Check if OAuth callback set a session cookie
-      const sessionCookieMatch = document.cookie.match(new RegExp('(^| )techpunjab_user_session=([^;]+)'));
-      let oauthUser: any = null;
-      if (sessionCookieMatch && sessionCookieMatch[2]) {
-        try {
-          oauthUser = JSON.parse(decodeURIComponent(sessionCookieMatch[2]));
-        } catch (e) {
-          console.error('Failed to parse techpunjab_user_session cookie', e);
-        }
-      }
-
-      const savedUserStr = localStorage.getItem('techpunjab_user');
-      const savedRole = localStorage.getItem('techpunjab_role') as UserRole | null;
-      const effectiveUser = savedUserStr ? JSON.parse(savedUserStr) : oauthUser;
-
-      if (effectiveUser) {
-        setCurrentUser(effectiveUser);
-        const resolvedRole = effectiveUser.role || savedRole || 'freelancer';
-        setRoleState(resolvedRole);
-        setCookie('user_role', resolvedRole);
-        setCookie('auth_token', 'tp_session_active');
-        if (!savedUserStr && oauthUser) {
-          localStorage.setItem('techpunjab_user', JSON.stringify(effectiveUser));
-          localStorage.setItem('techpunjab_role', resolvedRole);
-        }
-
-        // Check if custom freelancer profile details were saved for this specific user
-        const savedFreelancerStr = localStorage.getItem('techpunjab_freelancer_profile');
-        let customProfile: FreelancerProfile | null = null;
-        if (savedFreelancerStr) {
-          try {
-            const parsedFreelancer = JSON.parse(savedFreelancerStr);
-            if (!effectiveUser.name || parsedFreelancer.name === effectiveUser.name || parsedFreelancer.email === effectiveUser.email) {
-              customProfile = parsedFreelancer;
-            }
-          } catch (e) {
-            console.error('Failed to parse saved freelancer profile', e);
-          }
-        }
-
-        if (effectiveUser.name && (resolvedRole === 'freelancer' || effectiveUser.role === 'freelancer')) {
-          const baseProfile = customProfile || INITIAL_FREELANCER;
-          setFreelancer({
-            ...baseProfile,
-            name: effectiveUser.name,
-            avatar: effectiveUser.avatar || baseProfile.avatar,
-            certifications: (baseProfile.certifications || INITIAL_FREELANCER.certifications).map((c) => ({
-              ...c,
-              candidateName: effectiveUser.name,
-            })),
-          });
-          setLedger((prev) =>
-            prev.map((c, i) => (i < 2 ? { ...c, candidateName: effectiveUser.name } : c))
-          );
-          setKanbanTasks((prev) =>
-            prev.map((t) => ({ ...t, assignee: effectiveUser.name }))
-          );
-        } else if (customProfile) {
-          setFreelancer(customProfile);
-        }
-      } else {
-        // Fallback: check cookie
-        const match = document.cookie.match(new RegExp('(^| )user_role=([^;]+)'));
-        if (match && match[2]) {
-          const cookieRole = decodeURIComponent(match[2]) as UserRole;
-          setRoleState(cookieRole);
+      const savedRaw = localStorage.getItem('techpunjab_user');
+      if (savedRaw) {
+        const parsed = JSON.parse(savedRaw);
+        if (parsed.name === 'Gurpreet Singh' || parsed.email === 'gurpreet.dev@gmail.com') {
+          localStorage.removeItem('techpunjab_user');
+          localStorage.removeItem('techpunjab_freelancer_profile');
         }
       }
     } catch (e) {
-      console.error('Failed to load saved session', e);
+      console.error('Error cleaning legacy storage', e);
     }
+
+    const initAuth = async () => {
+      try {
+        // 1. Check Supabase Auth session first (authenticated Google account)
+        const { data: { session } } = await supabase.auth.getSession();
+
+        // 2. Check if OAuth callback set a session cookie
+        const sessionCookieMatch = document.cookie.match(new RegExp('(^|;\\s*)techpunjab_user_session=([^;]*)'));
+        let oauthUser: any = null;
+        if (sessionCookieMatch && sessionCookieMatch[2]) {
+          try {
+            oauthUser = JSON.parse(decodeURIComponent(sessionCookieMatch[2]));
+          } catch (e) {
+            console.error('Failed to parse techpunjab_user_session cookie', e);
+          }
+        }
+
+        const savedUserStr = localStorage.getItem('techpunjab_user');
+        const savedUser = savedUserStr ? JSON.parse(savedUserStr) : null;
+        const savedRole = localStorage.getItem('techpunjab_role') as UserRole | null;
+
+        let effectiveUser: any = null;
+
+        if (session?.user) {
+          const u = session.user;
+          const metadata = u.user_metadata || {};
+          const roleCookie = document.cookie.match(new RegExp('(^|;\\s*)user_role=([^;]*)'))?.[2];
+          const resolvedRole = (roleCookie ? decodeURIComponent(roleCookie) : (metadata.role || oauthUser?.role || savedRole || 'freelancer')) as UserRole;
+          const resolvedName = metadata.full_name || metadata.name || oauthUser?.name || deriveNameFromEmail(u.email || '');
+          const resolvedAvatar = metadata.avatar_url || metadata.picture || oauthUser?.avatar || '';
+
+          effectiveUser = {
+            id: u.id,
+            name: resolvedName,
+            role: resolvedRole,
+            avatar: resolvedAvatar,
+            email: u.email || '',
+            psdmId: `PB-PSDM-2024-${hashString(u.email || 'user').toString().slice(0, 5)}`,
+            tradeOrIndustry: 'Full Stack & Generative AI',
+          };
+        } else if (oauthUser && oauthUser.name && oauthUser.name !== 'Gurpreet Singh') {
+          effectiveUser = oauthUser;
+        } else if (savedUser && savedUser.name && savedUser.name !== 'Gurpreet Singh') {
+          effectiveUser = savedUser;
+        } else if (oauthUser) {
+          effectiveUser = oauthUser;
+        } else if (savedUser) {
+          effectiveUser = savedUser;
+        }
+
+        if (effectiveUser) {
+          const resolvedRole = effectiveUser.role || savedRole || 'freelancer';
+          setCurrentUser(effectiveUser);
+          setRoleState(resolvedRole);
+          setCookie('user_role', resolvedRole);
+          setCookie('auth_token', 'tp_session_active');
+
+          localStorage.setItem('techpunjab_user', JSON.stringify(effectiveUser));
+          localStorage.setItem('techpunjab_role', resolvedRole);
+
+          if (resolvedRole === 'freelancer' || effectiveUser.role === 'freelancer') {
+            const finalName = effectiveUser.name || 'Badal Srari';
+            const finalAvatar = effectiveUser.avatar || INITIAL_FREELANCER.avatar;
+            const finalEmail = effectiveUser.email || 'badalsrari@gmail.com';
+
+            const updatedProfile: FreelancerProfile = {
+              ...INITIAL_FREELANCER,
+              name: finalName,
+              avatar: finalAvatar,
+              handle: `@${finalEmail.split('@')[0]}`,
+              certifications: INITIAL_FREELANCER.certifications.map((c) => ({
+                ...c,
+                candidateName: finalName,
+              })),
+            };
+
+            setFreelancer(updatedProfile);
+            localStorage.setItem('techpunjab_freelancer_profile', JSON.stringify(updatedProfile));
+
+            setLedger((prev) =>
+              prev.map((c, i) => (i < 2 ? { ...c, candidateName: finalName } : c))
+            );
+            setKanbanTasks((prev) =>
+              prev.map((t) => ({ ...t, assignee: finalName }))
+            );
+          }
+        } else {
+          // Fallback: check cookie
+          const match = document.cookie.match(new RegExp('(^|;\\s*)user_role=([^;]*)'));
+          if (match && match[2]) {
+            const cookieRole = decodeURIComponent(match[2]) as UserRole;
+            setRoleState(cookieRole);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load saved session', e);
+      }
+    };
+
+    initAuth();
   }, []);
 
   // Listen to Supabase Auth state changes for real-time OAuth session sync
   React.useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
+        const u = session.user;
+        const metadata = u.user_metadata || {};
+        const roleCookie = typeof document !== 'undefined' ? document.cookie.match(new RegExp('(^|;\\s*)user_role=([^;]*)'))?.[2] : null;
+        const targetRole = (roleCookie ? decodeURIComponent(roleCookie) : (metadata.role || 'freelancer')) as UserRole;
+        const displayName = metadata.full_name || metadata.name || deriveNameFromEmail(u.email || '');
+        const avatarUrl = metadata.avatar_url || metadata.picture || '';
+
         const savedUserStr = typeof window !== 'undefined' ? localStorage.getItem('techpunjab_user') : null;
-        if (!savedUserStr) {
-          const u = session.user;
-          const roleCookie = typeof document !== 'undefined' ? document.cookie.match(new RegExp('(^| )user_role=([^;]+)'))?.[2] : null;
-          const targetRole = (roleCookie ? decodeURIComponent(roleCookie) : (u.user_metadata?.role || 'freelancer')) as UserRole;
-          const displayName = u.user_metadata?.full_name || u.user_metadata?.name || deriveNameFromEmail(u.email || '');
-          loginUser(targetRole, displayName, u.email);
+        const savedUser = savedUserStr ? JSON.parse(savedUserStr) : null;
+
+        // If saved user is not this authenticated user or is mock Gurpreet, sync immediately!
+        if (!savedUser || savedUser.email !== u.email || savedUser.name === 'Gurpreet Singh') {
+          loginUser(targetRole, displayName, u.email, avatarUrl);
         }
       }
     });
@@ -264,18 +312,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
   }, []);
 
-  const loginUser = (newRole: UserRole, customName?: string, email?: string) => {
+  const loginUser = (newRole: UserRole, customName?: string, email?: string, customAvatar?: string) => {
     setRole(newRole);
     let userData;
     if (newRole === 'freelancer') {
-      const isDefaultMock = !email || email.toLowerCase() === 'gurpreet.dev@gmail.com';
-      const finalEmail = email ? email.trim() : 'gurpreet.dev@gmail.com';
-      const finalName = customName?.trim() || (isDefaultMock ? INITIAL_FREELANCER.name : deriveNameFromEmail(finalEmail));
+      const isDefaultMock = !email && (!customName || customName === 'Gurpreet Singh');
+      const finalEmail = email ? email.trim() : (isDefaultMock ? 'badalsrari@gmail.com' : 'freelancer@techpunjab.in');
+      const finalName = (customName && customName !== 'Gurpreet Singh') 
+        ? customName.trim() 
+        : deriveNameFromEmail(finalEmail);
+      const finalAvatar = customAvatar || (currentUser?.avatar && currentUser.avatar !== INITIAL_FREELANCER.avatar ? currentUser.avatar : INITIAL_FREELANCER.avatar);
       
       userData = {
         name: finalName,
         role: 'freelancer' as UserRole,
-        avatar: INITIAL_FREELANCER.avatar,
+        avatar: finalAvatar,
         email: finalEmail,
         psdmId: `PB-PSDM-2024-${hashString(finalEmail).toString().slice(0, 5)}`,
         tradeOrIndustry: 'Full Stack & Generative AI',
@@ -284,6 +335,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const newFreelancerProfile: FreelancerProfile = {
         ...INITIAL_FREELANCER,
         name: finalName,
+        avatar: finalAvatar,
         handle: `@${finalEmail.split('@')[0]}`,
         certifications: INITIAL_FREELANCER.certifications.map((c) => ({
           ...c,
@@ -310,7 +362,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       userData = {
         name: finalName,
         role: 'client' as UserRole,
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+        avatar: customAvatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
         email: finalEmail,
         psdmId: `PB-MSME-2024-${hashString(finalEmail).toString().slice(0, 4)}`,
         gstin: '03AABCA1234F1Z8',

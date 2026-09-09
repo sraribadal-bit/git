@@ -2,8 +2,8 @@ import { FreelancerProfile, GigProject, KanbanTask, PSDMCertification } from '@/
 
 export const INITIAL_FREELANCER: FreelancerProfile = {
   id: 'freelancer-psdm-101',
-  name: 'Gurpreet Singh',
-  handle: '@gurpreet_builds',
+  name: 'Badal Srari',
+  handle: '@badal_builds',
   avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
   title: 'Full-Stack & Generative AI Builder',
   bio: 'PSDM NSQF-5 Certified Developer specializing in Next.js, FastAPI, Vector Embeddings & automated MSME workflow systems. Graduated top of batch from MSDC Mohali.',
@@ -22,12 +22,12 @@ export const INITIAL_FREELANCER: FreelancerProfile = {
     clientReview: 5.0,
     tags: ['Next.js 14', 'PostgreSQL', 'Mapbox', 'Gemini 1.5'],
     liveUrl: 'https://logistics-demo.techpunjab.in',
-    githubUrl: 'https://github.com/gurpreet-dev/punjab-freight-tracker',
+    githubUrl: 'https://github.com/badal-dev/punjab-freight-tracker',
   },
   certifications: [
     {
       certificateId: 'PB-PSDM-2024-AI-89421',
-      candidateName: 'Gurpreet Singh',
+      candidateName: 'Badal Srari',
       courseName: 'Full Stack Web & Applied Generative AI Engineering',
       nsqfLevel: 5,
       batchYear: '2024',
@@ -39,7 +39,7 @@ export const INITIAL_FREELANCER: FreelancerProfile = {
     },
     {
       certificateId: 'PB-PSDM-2023-PY-55102',
-      candidateName: 'Gurpreet Singh',
+      candidateName: 'Badal Srari',
       courseName: 'Advanced Python, Cloud Microservices & API Architecture',
       nsqfLevel: 4,
       batchYear: '2023',
@@ -66,7 +66,7 @@ export const INITIAL_GIGS: GigProject[] = [
     skillsRequired: ['Next.js', 'FastAPI', 'Gemini API', 'PostgreSQL', 'UPI Escrow'],
     description: 'We need an automated inventory forecasting dashboard for our multi-warehouse FMCG distribution. Must include real-time stock alert notifications, automated supplier reorder prompts via WhatsApp/SMS, and an executive revenue dashboard.',
     matchScore: 98,
-    matchRationale: 'Semantic match 98% with Gurpreet’s PSDM Full-Stack credential and proven experience building logistics telemetry and inventory platforms.',
+    matchRationale: 'Semantic match 98% with Badal’s PSDM Full-Stack credential and proven experience building logistics telemetry and inventory platforms.',
     status: 'IN_PROGRESS',
     milestones: [
       {
@@ -189,6 +189,312 @@ export const INITIAL_GIGS: GigProject[] = [
         status: 'PENDING',
       }
     ]
+  },
+  {
+    id: 'gig-techpb-004',
+    title: 'Gemini Vision Quality Inspection System for Textile Weaving MSME',
+    clientName: 'Sardar Baldev Singh',
+    clientCompany: 'Amritsar Silk & Woolen Mills',
+    clientLocation: 'Amritsar Textile Focal Point',
+    budget: 45000,
+    escrowLockedAmount: 22000,
+    deadline: '15 Days',
+    category: 'AI Services',
+    skillsRequired: ['Gemini API', 'Computer Vision', 'Python', 'FastAPI', 'PyTorch'],
+    description: 'Automated fabric defect detection system using Gemini 1.5 Pro multimodal vision. Captures live industrial camera feeds to flag yarn misweaves, stains, and density imperfections in real-time.',
+    matchScore: 97,
+    matchRationale: 'Direct match for applied Generative AI and Python computer vision capabilities.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-401',
+        title: 'Camera Ingestion & Gemini Vision Prompt Pipeline',
+        description: 'Frame extraction daemon and structured JSON defect classification output.',
+        amount: 12000,
+        dueDate: '5 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-402',
+        title: 'Factory Floor Real-Time Alert Screen & Escrow Handshake',
+        description: 'Low-latency dashboard with audio alert and shift yield metrics.',
+        amount: 10000,
+        dueDate: '10 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-005',
+    title: 'Brand Identity, Packaging Design & Modern UI for Kinnow Juice Export MSME',
+    clientName: 'Manpreet Sandhu',
+    clientCompany: 'Abohar Citrus Organics Pvt Ltd',
+    clientLocation: 'Abohar Agro Park, Fazilka',
+    budget: 28000,
+    escrowLockedAmount: 14000,
+    deadline: '10 Days',
+    category: 'Design & Creative',
+    skillsRequired: ['Figma', 'Packaging Design', 'Brand Identity', 'UI/UX', 'TailwindCSS'],
+    description: 'Complete export branding package including retail bottle label designs, export carton box typography, and a modern DTC storefront landing page in Figma.',
+    matchScore: 92,
+    matchRationale: 'Matches UI/UX and product design competencies for agricultural MSMEs.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-501',
+        title: 'Packaging & Vector Print Artwork Deliverables',
+        description: 'Print-ready CMYK files with barcodes and nutritional compliance labels.',
+        amount: 8000,
+        dueDate: '4 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-502',
+        title: 'Figma UI Component System & Storefront Mockups',
+        description: 'Interactive high-fidelity prototype with mobile-responsive design.',
+        amount: 6000,
+        dueDate: '6 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-006',
+    title: 'B2B Export Lead Generation & Regional SEO for Bicycle Components Manufacturer',
+    clientName: 'Vikramjit Ahluwalia',
+    clientCompany: 'Hero Allied Gears & Engineering',
+    clientLocation: 'Ludhiana Industrial Focal Point',
+    budget: 32000,
+    escrowLockedAmount: 16000,
+    deadline: '20 Days',
+    category: 'Sales & Marketing',
+    skillsRequired: ['B2B Sales', 'SEO', 'Email Marketing', 'LinkedIn Outreach', 'HubSpot'],
+    description: 'Drive high-ticket European and ASEAN distributor inquiries for cycle hubs and gear brackets through targeted LinkedIn ABM campaigns and technical SEO optimization.',
+    matchScore: 90,
+    matchRationale: 'Ideal for digital growth specialists targeting industrial supply chains.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-601',
+        title: 'Technical B2B SEO Audit & Buyer Persona Mapping',
+        description: 'Keyword research and structured data implementation for global distributor search.',
+        amount: 8000,
+        dueDate: '7 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-602',
+        title: 'Outreach Campaign & Verified Distributor Pipeline',
+        description: 'Delivery of 50+ vetted overseas buyer meetings and qualified RFQs.',
+        amount: 8000,
+        dueDate: '13 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-007',
+    title: 'Multilingual Technical Handbooks & Operator Manuals (Punjabi, English, Hindi)',
+    clientName: 'Sukhdev Brar',
+    clientCompany: 'Preet Harvester Combine Works',
+    clientLocation: 'Nabha - Patiala Road',
+    budget: 20000,
+    escrowLockedAmount: 10000,
+    deadline: '12 Days',
+    category: 'Writing & Translation',
+    skillsRequired: ['Technical Writing', 'Gurmukhi Localization', 'Proofreading', 'User Guides'],
+    description: 'Author step-by-step illustrated safety guides and hydraulic maintenance manuals in English, with authentic Punjabi (Gurmukhi) translation for rural agricultural operators.',
+    matchScore: 93,
+    matchRationale: 'Strong fit for regional bilingual technical writers and localization specialists.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-701',
+        title: 'English Technical Safety & Maintenance Standard Draft',
+        description: 'Comprehensive 40-page equipment maintenance procedures draft.',
+        amount: 5000,
+        dueDate: '5 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-702',
+        title: 'Punjabi Gurmukhi & Hindi Certified Translation Delivery',
+        description: 'Accurate terminology verified by agricultural engineering specialists.',
+        amount: 5000,
+        dueDate: '7 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-008',
+    title: 'Virtual MSME Operations Support & Customer CRM Processing',
+    clientName: 'Simran Jolly',
+    clientCompany: 'Doaba Sports Garments & Tracksuits',
+    clientLocation: 'Jalandhar Leather Complex',
+    budget: 18000,
+    escrowLockedAmount: 8000,
+    deadline: '30 Days',
+    category: 'Admin & Support',
+    skillsRequired: ['Virtual Assistant', 'Zoho CRM', 'Excel / Sheets', 'Order Management'],
+    description: 'Manage daily wholesale order entries, inventory sync across Amazon/Flipkart/B2B channels, and dispatch coordination with Blue Dart logistics.',
+    matchScore: 88,
+    matchRationale: 'Fits administrative specialists with e-commerce operations experience.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-801',
+        title: 'First Fortnight Operations & Dispatch Reconciliations',
+        description: '100% on-time dispatch dispatch logs and CRM updates.',
+        amount: 4000,
+        dueDate: '15 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-802',
+        title: 'Month-End Multi-Channel Audit & Inventory Reconciliation',
+        description: 'Final reconciliation statement matching bank receipts and courier dockets.',
+        amount: 4000,
+        dueDate: '30 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-009',
+    title: 'GST Reconciliations, E-Way Bill Automations & Tally Prime Cloud Migration',
+    clientName: 'Ashok Garg',
+    clientCompany: 'Malwa Cotton Ginning & Pressing Industries',
+    clientLocation: 'Bathinda Industrial Growth Centre',
+    budget: 30000,
+    escrowLockedAmount: 15000,
+    deadline: '14 Days',
+    category: 'Finance & Accounting',
+    skillsRequired: ['Tally Prime', 'GST Filing', 'E-Way Bills', 'Financial Modeling', 'Audit'],
+    description: 'Migrate on-premise Tally 9 data to AWS Tally Prime cloud, automate GSTR-2B input tax credit reconciliation, and streamline automated e-Way bill JSON generation.',
+    matchScore: 94,
+    matchRationale: 'Designed for accounting professionals with cloud ERP and tax automation expertise.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-901',
+        title: 'Cloud Tally Migration & Historical Ledger Cleansing',
+        description: 'Zero data discrepancy verification across 5 fiscal years.',
+        amount: 7000,
+        dueDate: '5 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-902',
+        title: 'Automated GSTR-2B ITC Matching & e-Way Bill Webhooks',
+        description: 'Automated discrepancy detector reducing audit cycle by 80%.',
+        amount: 8000,
+        dueDate: '9 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-010',
+    title: 'MSME Vendor Master Agreement, Non-Disclosure Contracts & Samadhaan Filing',
+    clientName: 'Advocate Rajesh Thapar',
+    clientCompany: 'Punjab Steel Re-Rolling Mills Association',
+    clientLocation: 'Mandi Gobindgarh Steel Town',
+    budget: 26000,
+    escrowLockedAmount: 12000,
+    deadline: '10 Days',
+    category: 'Legal',
+    skillsRequired: ['Contract Law', 'MSME Samadhaan', 'NDA', 'Commercial Drafting', 'IP Protection'],
+    description: 'Draft standardized bilingual supplier procurement agreements, ironclad Non-Disclosure Agreements for proprietary alloy formulas, and advisory on MSME Samadhaan payment recovery petitions.',
+    matchScore: 91,
+    matchRationale: 'Tailored for legal researchers and corporate contract specialists.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-1001',
+        title: 'Master Supplier Contract & Mutual NDA Templates',
+        description: 'Vetted draft compliant with Indian Contract Act and MSMED Act 2006.',
+        amount: 6000,
+        dueDate: '4 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-1002',
+        title: 'Delayed Payment Interest Claim Dossier & Samadhaan Formats',
+        description: 'Complete claim documentation with statutory interest calculations.',
+        amount: 6000,
+        dueDate: '6 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-011',
+    title: 'PSDM Vocational Trainee Hiring Drive & Skill Assessment Platform Setup',
+    clientName: 'Ravinder Cheema',
+    clientCompany: 'Mohali Technology Incubation Hub',
+    clientLocation: 'Mohali Quark City IT SEZ',
+    budget: 24000,
+    escrowLockedAmount: 12000,
+    deadline: '15 Days',
+    category: 'HR & Training',
+    skillsRequired: ['Technical Recruitment', 'PSDM Alignment', 'LMS Setup', 'Staffing', 'Evaluation'],
+    description: 'Coordinate recruitment drive for 25 junior full-stack developers graduating from MSDC Mohali and ITI Patiala, establishing automated coding test evaluations and onboarding LMS.',
+    matchScore: 95,
+    matchRationale: 'Direct match for HR recruiters specializing in Punjab Government skill initiatives.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-1101',
+        title: 'Candidate Screening & Technical Assessment Sandbox',
+        description: 'Shortlisting of top 50 PSDM candidates with verified badge validation.',
+        amount: 6000,
+        dueDate: '7 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-1102',
+        title: 'Offer Letter Execution & 30-Day Onboarding Curriculum',
+        description: 'Successful placement confirmation and digital credential record.',
+        amount: 6000,
+        dueDate: '8 Days',
+        status: 'PENDING'
+      }
+    ]
+  },
+  {
+    id: 'gig-techpb-012',
+    title: 'SolidWorks 3D CAD Modeling & CNC Machining Blueprints for Tractor Transmission',
+    clientName: 'Er. Hardeep Toor',
+    clientCompany: 'Swaraj Tractor Ancillary Forge',
+    clientLocation: 'Ludhiana Auto Cluster',
+    budget: 48000,
+    escrowLockedAmount: 24000,
+    deadline: '18 Days',
+    category: 'Engineering & Architecture',
+    skillsRequired: ['SolidWorks', 'CAD / CAM', 'CNC G-Code', 'Industrial Design', 'Mechanical Engineering'],
+    description: 'Precision 3D CAD modeling and finite element stress analysis for heavy tractor differential bevel gears, delivering production-ready GD&T blueprints and CNC milling G-code.',
+    matchScore: 96,
+    matchRationale: 'Designed for certified mechanical CAD engineers and industrial toolmakers.',
+    status: 'OPEN',
+    milestones: [
+      {
+        id: 'm-1201',
+        title: '3D Parasolid Models & FEA Stress Simulation Report',
+        description: 'Torsional stress validation under 2000 Nm torque loading.',
+        amount: 12000,
+        dueDate: '8 Days',
+        status: 'PENDING'
+      },
+      {
+        id: 'm-1202',
+        title: 'Production 2D Drawings & 5-Axis CNC Toolpath G-Code',
+        description: 'Complete machining package tested on Haas CNC simulator.',
+        amount: 12000,
+        dueDate: '10 Days',
+        status: 'PENDING'
+      }
+    ]
   }
 ];
 
@@ -201,8 +507,8 @@ export const INITIAL_KANBAN_TASKS: KanbanTask[] = [
     payoutAmount: 5000,
     column: 'COMPLETED',
     priority: 'HIGH',
-    assignee: 'Gurpreet Singh',
-    githubUrl: 'https://github.com/gurpreet-dev/punjab-freight-tracker/pull/1',
+    assignee: 'Badal Srari',
+    githubUrl: 'https://github.com/badal-dev/punjab-freight-tracker/pull/1',
     dueDate: 'Completed',
   },
   {
@@ -213,8 +519,8 @@ export const INITIAL_KANBAN_TASKS: KanbanTask[] = [
     payoutAmount: 6000,
     column: 'IN_REVIEW',
     priority: 'HIGH',
-    assignee: 'Gurpreet Singh',
-    githubUrl: 'https://github.com/gurpreet-dev/punjab-freight-tracker/pull/4',
+    assignee: 'Badal Srari',
+    githubUrl: 'https://github.com/badal-dev/punjab-freight-tracker/pull/4',
     figmaUrl: 'https://figma.com/@techpunjab/inventory-preview',
     dueDate: 'Today, 6:00 PM',
   },
@@ -226,8 +532,8 @@ export const INITIAL_KANBAN_TASKS: KanbanTask[] = [
     payoutAmount: 4000,
     column: 'IN_PROGRESS',
     priority: 'MEDIUM',
-    assignee: 'Gurpreet Singh',
-    githubUrl: 'https://github.com/gurpreet-dev/punjab-freight-tracker/tree/feature/webhooks',
+    assignee: 'Badal Srari',
+    githubUrl: 'https://github.com/badal-dev/punjab-freight-tracker/tree/feature/webhooks',
     dueDate: 'Tomorrow',
   },
   {
@@ -238,7 +544,7 @@ export const INITIAL_KANBAN_TASKS: KanbanTask[] = [
     payoutAmount: 2500,
     column: 'TODO',
     priority: 'MEDIUM',
-    assignee: 'Gurpreet Singh',
+    assignee: 'Badal Srari',
     dueDate: 'In 5 days',
   },
   {
@@ -249,7 +555,7 @@ export const INITIAL_KANBAN_TASKS: KanbanTask[] = [
     payoutAmount: 2500,
     column: 'TODO',
     priority: 'LOW',
-    assignee: 'Gurpreet Singh',
+    assignee: 'Badal Srari',
     dueDate: 'In 7 days',
   }
 ];
@@ -263,7 +569,7 @@ export const PSDM_VERIFIED_LEDGER: PSDMCertification[] = [
     courseName: 'Industrial IoT & Smart Sensors Automation',
     nsqfLevel: 5,
     batchYear: '2024',
-    trainingCenter: 'Govt. Polytechnic College for Girls, Patiala',
+    trainingCenter: 'Govt. Polytechnic College, Jalandhar',
     sha256Proof: '0x1c98e3b56a421f98d7210e4a65b983ef1803dc5428a1c3e4187f5a0194821cde',
     verifiedAt: '03 Sep 2024, 09:12 AM IST',
     badgeTitle: 'Punjab Skill Development Mission (Level 5 Certified)',
@@ -296,11 +602,15 @@ export const PSDM_VERIFIED_LEDGER: PSDMCertification[] = [
 ];
 
 export function deriveNameFromEmail(rawEmail: string): string {
-  if (!rawEmail || !rawEmail.includes('@')) return 'User';
+  if (!rawEmail || !rawEmail.includes('@')) return 'Badal Srari';
   const prefix = rawEmail.split('@')[0];
-  const cleaned = prefix.replace(/[._\-+]/g, ' ').replace(/\d+/g, ' ').trim();
+  let cleaned = prefix.replace(/([a-z])([A-Z])/g, '$1 $2');
+  cleaned = cleaned.replace(/[._\-+]/g, ' ').replace(/\d+/g, ' ').trim();
+  if (/^badalsrari$/i.test(cleaned)) {
+    return 'Badal Srari';
+  }
   const nameToUse = cleaned || prefix.replace(/[._\-+]/g, ' ').trim();
-  if (!nameToUse) return 'User';
+  if (!nameToUse) return 'Badal Srari';
   return nameToUse
     .split(/\s+/)
     .filter(Boolean)

@@ -26,6 +26,7 @@ export const AIScoperModal: React.FC = () => {
     setIsScoperModalOpen, 
     addNewProject, 
     showToast,
+    currentUser,
     freelancer 
   } = useApp();
 
@@ -381,7 +382,7 @@ export const AIScoperModal: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-xs font-bold text-pink-900">
-                      Auto-Personalized Pitch for {freelancer.name}
+                      Auto-Personalized Pitch for {(currentUser?.name && currentUser.name !== 'Gurpreet Singh') ? currentUser.name : (freelancer.name && freelancer.name !== 'Gurpreet Singh' ? freelancer.name : 'Badal Srari')}
                     </div>
                     <p className="text-xs text-pink-700/90 mt-0.5">
                       Highlights your verified PSDM NSQF-5 certification from MSDC Mohali and past logistics telemetry track record without generic AI fluff.

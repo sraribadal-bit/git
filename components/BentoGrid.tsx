@@ -40,7 +40,9 @@ export const BentoGrid: React.FC = () => {
     setActiveTab
   } = useApp();
 
-  const freelancerName = (role === 'freelancer' && currentUser?.name) ? currentUser.name : freelancer.name;
+  const freelancerName = (currentUser?.name && currentUser.name !== 'Gurpreet Singh')
+    ? currentUser.name
+    : (freelancer.name && freelancer.name !== 'Gurpreet Singh' ? freelancer.name : 'Badal Srari');
 
   const [copiedHash, setCopiedHash] = React.useState(false);
 

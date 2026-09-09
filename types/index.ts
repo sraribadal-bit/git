@@ -80,6 +80,24 @@ export interface Milestone {
   upiRefNumber?: string;
 }
 
+export type GigCategory = 
+  | 'AI Services'
+  | 'Development & IT'
+  | 'Design & Creative'
+  | 'Sales & Marketing'
+  | 'Writing & Translation'
+  | 'Admin & Support'
+  | 'Finance & Accounting'
+  | 'Legal'
+  | 'HR & Training'
+  | 'Engineering & Architecture'
+  | 'Web & AI'
+  | 'IoT & Automation'
+  | 'Mobile Apps'
+  | 'Industrial Design'
+  | 'Cloud & Data'
+  | (string & {});
+
 export interface GigProject {
   id: string;
   title: string;
@@ -89,7 +107,7 @@ export interface GigProject {
   budget: number;
   escrowLockedAmount: number;
   deadline: string;
-  category: 'Web & AI' | 'IoT & Automation' | 'Mobile Apps' | 'Industrial Design' | 'Cloud & Data';
+  category: GigCategory;
   skillsRequired: string[];
   description: string;
   matchScore?: number; // Semantic AI match percentage e.g. 98

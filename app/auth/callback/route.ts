@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
+import { deriveNameFromEmail } from '@/data/mockData';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -62,7 +63,7 @@ export async function GET(request: Request) {
       if (user) {
         const email = user.email || '';
         const metadata = user.user_metadata || {};
-        const fullName = metadata.full_name || metadata.name || (email ? email.split('@')[0] : 'TechPunjab User');
+        const fullName = metadata.full_name || metadata.name || deriveNameFromEmail(email);
         const avatarUrl = metadata.avatar_url || metadata.picture || '';
 
         // 2. Role & Profile Upsert: upsert in profiles table

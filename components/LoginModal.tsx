@@ -58,7 +58,7 @@ export const LoginModal: React.FC = () => {
 
   const handleQuickLogin = (role: 'freelancer' | 'client') => {
     if (role === 'freelancer') {
-      loginUser('freelancer', INITIAL_FREELANCER.name, 'gurpreet.dev@gmail.com');
+      loginUser('freelancer', INITIAL_FREELANCER.name, 'badalsrari@gmail.com');
       setIsLoginModalOpen(false);
       router.push('/freelancer/dashboard');
     } else {
@@ -71,7 +71,7 @@ export const LoginModal: React.FC = () => {
   const handleSignInSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedEmail = email.trim();
-    const finalEmail = trimmedEmail || (authRole === 'freelancer' ? 'gurpreet.dev@gmail.com' : 'harjit@amritsarafro.com');
+    const finalEmail = trimmedEmail || (authRole === 'freelancer' ? 'badalsrari@gmail.com' : 'harjit@amritsarafro.com');
     let accountName = '';
 
     if (typeof window !== 'undefined') {
@@ -204,7 +204,7 @@ export const LoginModal: React.FC = () => {
               onChange={(newRole) => {
                 setAuthRole(newRole);
                 if (newRole === 'freelancer') {
-                  setEmail('gurpreet.dev@gmail.com');
+                  setEmail('badalsrari@gmail.com');
                 } else {
                   setEmail('harjit@amritsarafro.com');
                 }

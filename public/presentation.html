@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechPunjab - Project Presentation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.35s ease-in-out;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    @media print {
+      body { background: white !important; color: black !important; }
+      .slide { display: flex !important; opacity: 1 !important; page-break-after: always; min-height: 100vh; border-bottom: 2px solid #e2e8f0; padding: 2rem !important; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white overflow-x-hidden">
+
+  <!-- Top Navigation & Controls Header (No Print) -->
+  <header class="no-print w-full px-6 py-4 flex items-center justify-between border-b border-zinc-800/80 bg-zinc-900/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-extrabold text-sm">
+        TP
+      </div>
+      <div>
+        <span class="font-extrabold text-sm tracking-tight text-white">TechPunjab</span>
+        <span class="text-[11px] text-zinc-400 ml-2 hidden sm:inline-block">Project Presentation Deck</span>
+      </div>
+    </div>
+
+    <!-- Slide progress & buttons -->
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-mono text-zinc-400 bg-zinc-800/80 px-3 py-1 rounded-full border border-zinc-700/60" id="slideCounter">
+        Slide 1 / 10
+      </span>
+      <button onclick="prevSlide()" class="p-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all text-xs font-semibold flex items-center gap-1">
+        ‹ Prev
+      </button>
+      <button onclick="nextSlide()" class="p-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all text-xs font-bold shadow-lg shadow-emerald-900/30 flex items-center gap-1">
+        Next ›
+      </button>
+      <button onclick="window.print()" class="hidden md:flex items-center gap-1.5 p-2 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition-all">
+        🖨️ PDF / Print
+      </button>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="no-print w-full bg-zinc-900 h-1">
+    <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1 transition-all duration-300" style="width: 10%;"></div>
+  </div>
+
+  <!-- Slides Container -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 max-w-6xl mx-auto w-full">
+
+    <!-- SLIDE 1: Title Slide -->
+    <div class="slide active flex-col justify-center items-center text-center py-10 w-full animate-in">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-6">
+        <span>🏛️ Govt. of Punjab • PSDM Initiative</span>
+      </div>
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight mb-4">
+        Tech<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Punjab</span>
+      </h1>
+      <p class="text-lg sm:text-2xl text-zinc-300 font-medium max-w-3xl mb-8 leading-relaxed">
+        Role-Based Smart Authentication & Marketplace Platform Connecting Certified Youth with Punjab MSMEs
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl w-full mx-auto text-left mb-10">
+        <div class="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-[10px] text-zinc-500 uppercase font-bold">Tech Stack</div>
+          <div class="text-xs font-bold text-white mt-0.5">Next.js 14 + TS</div>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-[10px] text-zinc-500 uppercase font-bold">Backend & DB</div>
+          <div class="text-xs font-bold text-white mt-0.5">Supabase PostgreSQL</div>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-[10px] text-zinc-500 uppercase font-bold">Security</div>
+          <div class="text-xs font-bold text-white mt-0.5">Smart Milestone Escrow</div>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800">
+          <div class="text-[10px] text-zinc-500 uppercase font-bold">Verification</div>
+          <div class="text-xs font-bold text-white mt-0.5">PSDM NSQF-5 Proof</div>
+        </div>
+      </div>
+
+      <div class="text-xs text-zinc-500 font-mono">
+        Pair-Programming & Architecture Presentation • Use Arrow Keys [← / →] to navigate
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Problem Statement -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">01 / The Challenge</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">The Problem We Are Solving</h2>
+      <p class="text-sm text-zinc-400 mb-8">Disconnection between certified technical talent and Punjab's vibrant industrial clusters.</p>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800 hover:border-red-500/40 transition-all">
+          <div class="w-12 h-12 rounded-2xl bg-red-500/10 text-red-400 flex items-center justify-center text-xl font-bold mb-4">⚠️</div>
+          <h3 class="text-base font-bold text-white mb-2">Unverified Freelancing Risk</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            MSMEs in Ludhiana, Amritsar, and Jalandhar struggle to identify credible tech talent and often get scammed by unverified agencies.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800 hover:border-amber-500/40 transition-all">
+          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl font-bold mb-4">💸</div>
+          <h3 class="text-base font-bold text-white mb-2">Payment Insecurity & Disputes</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Freelancers suffer from delayed payments and scope creep, while employers fear paying advances without receiving working code or deliverables.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800 hover:border-blue-500/40 transition-all">
+          <div class="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl font-bold mb-4">📜</div>
+          <h3 class="text-base font-bold text-white mb-2">Underutilized PSDM Talent</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Thousands of youth pass out with Govt. NSQF technical certifications each year but lack a dedicated digital marketplace to land local gigs.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: The Proposed Solution -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">02 / The Solution</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">TechPunjab Platform Vision</h2>
+      <p class="text-sm text-zinc-400 mb-8">A unified state-backed portal combining verified identities with smart escrow protection.</p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-3xl bg-gradient-to-br from-emerald-950/40 to-zinc-900/80 border border-emerald-500/30">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 text-lg">🎓</span>
+            <h3 class="text-lg font-bold text-white">For Freelancers & PSDM Trainees</h3>
+          </div>
+          <ul class="space-y-2.5 text-xs text-zinc-300">
+            <li class="flex items-start gap-2">✅ <strong>Verifiable Skill Badge:</strong> Tamper-proof SHA-256 digital certification.</li>
+            <li class="flex items-start gap-2">✅ <strong>Guaranteed Milestone Payouts:</strong> Client funds are locked in Escrow before work starts.</li>
+            <li class="flex items-start gap-2">✅ <strong>Semantic AI Matchmaking:</strong> Auto-matched with high-paying local gigs based on certified skills.</li>
+          </ul>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-gradient-to-br from-blue-950/40 to-zinc-900/80 border border-blue-500/30">
+          <div class="flex items-center gap-3 mb-3">
+            <span class="p-2 rounded-xl bg-blue-500/20 text-blue-400 text-lg">🏭</span>
+            <h3 class="text-lg font-bold text-white">For MSMEs & Enterprise Clients</h3>
+          </div>
+          <ul class="space-y-2.5 text-xs text-zinc-300">
+            <li class="flex items-start gap-2">✅ <strong>Zero Advance Risk:</strong> Funds are only disbursed after approving milestone deliverables.</li>
+            <li class="flex items-start gap-2">✅ <strong>Pre-Vetted Talent:</strong> Direct access to NSQF-5 certified web, AI, CAD & IoT builders.</li>
+            <li class="flex items-start gap-2">✅ <strong>AI Project Scoper:</strong> Generates milestone breakdowns and budget estimates in seconds.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: Core Key Features -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">03 / Platform Innovations</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">Core Platform Features</h2>
+      <p class="text-sm text-zinc-400 mb-8">Purpose-built features designed for high security, transparency, and speed.</p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-2xl mb-3">🔐</div>
+          <h3 class="text-sm font-bold text-white mb-1">Smart SSO & OAuth 2.0</h3>
+          <p class="text-xs text-zinc-400">Modal role selection (Freelancer vs Client) with Google OAuth 2.0 and Mobile OTP (Fast2SMS).</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-2xl mb-3">🛡️</div>
+          <h3 class="text-sm font-bold text-white mb-1">PSDM Ledger</h3>
+          <p class="text-xs text-zinc-400">Verifiable SHA-256 cryptographic hashes for diploma credentials issued by Govt. of Punjab.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-2xl mb-3">💳</div>
+          <h3 class="text-sm font-bold text-white mb-1">Milestone Escrow</h3>
+          <p class="text-xs text-zinc-400">Three-phase milestone lock, deliverable review, revision loop, and instant UPI release.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-2xl mb-3">🤖</div>
+          <h3 class="text-sm font-bold text-white mb-1">AI Project Scoper</h3>
+          <p class="text-xs text-zinc-400">Powered by Gemini AI to convert raw MSME requirements into structured deliverables and milestones.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Dual Persona User Journey -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">04 / User Experience</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">Dual-Persona Architectural Flow</h2>
+      <p class="text-sm text-zinc-400 mb-8">Role-based route isolation handled transparently by Next.js middleware and cookies.</p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Flow 1 -->
+        <div class="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-bold text-emerald-400">Talent Flow: Freelancer</span>
+            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/20 font-mono">/freelancer/*</span>
+          </div>
+          <ol class="space-y-3 text-xs text-zinc-300">
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-emerald-400">1</span>
+              <span>Login with Google as Freelancer & sync PSDM ID</span>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-emerald-400">2</span>
+              <span>Browse gigs with AI Semantic Match Score (e.g., 98% match)</span>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-emerald-400">3</span>
+              <span>Submit Quick Bid with verifiable portfolio links</span>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-emerald-400">4</span>
+              <span>Manage tasks on Kanban & receive guaranteed Escrow payout</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Flow 2 -->
+        <div class="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-bold text-blue-400">Client Flow: MSME</span>
+            <span class="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/20 font-mono">/client/*</span>
+          </div>
+          <ol class="space-y-3 text-xs text-zinc-300">
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-blue-400">1</span>
+              <span>Register with Udyam / GSTIN or Google SSO</span>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-blue-400">2</span>
+              <span>Draft job with AI Scoper to auto-generate milestones</span>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-blue-400">3</span>
+              <span>Lock Milestone 1 funds into Escrow vault</span>
+            </li>
+            <li class="flex items-center gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-blue-400">4</span>
+              <span>Review work, request revisions, and click 'Approve & Pay'</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: Smart Escrow Mechanism -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">05 / Trust Protocol</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">Milestone Escrow Workflow</h2>
+      <p class="text-sm text-zinc-400 mb-8">Zero financial friction and complete transparency for both parties.</p>
+
+      <div class="grid sm:grid-cols-4 gap-4 text-center">
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 font-extrabold flex items-center justify-center mx-auto mb-3">1</div>
+          <h3 class="text-xs font-bold text-white mb-1">Fund Locking</h3>
+          <p class="text-[11px] text-zinc-400">Client deposits Milestone funds (e.g., ₹10,000) into safe state escrow vault.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 font-extrabold flex items-center justify-center mx-auto mb-3">2</div>
+          <h3 class="text-xs font-bold text-white mb-1">Work Execution</h3>
+          <p class="text-[11px] text-zinc-400">Candidate builds features and submits code/deliverable bundle for review.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 font-extrabold flex items-center justify-center mx-auto mb-3">3</div>
+          <h3 class="text-xs font-bold text-white mb-1">Client Inspection</h3>
+          <p class="text-[11px] text-zinc-400">Client inspects demo. If needed, triggers a revision note directly.</p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 font-extrabold flex items-center justify-center mx-auto mb-3">4</div>
+          <h3 class="text-xs font-bold text-white mb-1">Instant Payout</h3>
+          <p class="text-[11px] text-zinc-400">Client clicks 'Approve & Release' to trigger instant UPI bank settlement.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: Technical Stack & Architecture -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">06 / Architecture</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">Full-Stack Technical Architecture</h2>
+      <p class="text-sm text-zinc-400 mb-8">Modern, cloud-native tech stack engineered for high security and performance.</p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-emerald-400 font-bold text-xs uppercase mb-1">Frontend Layer</div>
+          <h3 class="text-sm font-extrabold text-white mb-2">Next.js 14 + React 18</h3>
+          <ul class="text-xs text-zinc-400 space-y-1">
+            <li>• App Router & Server Handlers</li>
+            <li>• TypeScript Strict Type Safety</li>
+            <li>• Tailwind CSS & Glassmorphism</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-blue-400 font-bold text-xs uppercase mb-1">Backend & Auth</div>
+          <h3 class="text-sm font-extrabold text-white mb-2">Supabase Platform</h3>
+          <ul class="text-xs text-zinc-400 space-y-1">
+            <li>• PostgreSQL Relational Database</li>
+            <li>• Google OAuth 2.0 PKCE Flow</li>
+            <li>• Row-Level Security (RLS)</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-purple-400 font-bold text-xs uppercase mb-1">AI & Matching</div>
+          <h3 class="text-sm font-extrabold text-white mb-2">Gemini 1.5 API</h3>
+          <ul class="text-xs text-zinc-400 space-y-1">
+            <li>• Natural Language Scope Builder</li>
+            <li>• Semantic Skill-to-Job Matching</li>
+            <li>• Automated Proposal Analysis</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-amber-400 font-bold text-xs uppercase mb-1">Integrations</div>
+          <h3 class="text-sm font-extrabold text-white mb-2">APIs & Gateways</h3>
+          <ul class="text-xs text-zinc-400 space-y-1">
+            <li>• Fast2SMS Mobile OTP Route</li>
+            <li>• Virtual UPI Escrow Webhook</li>
+            <li>• SHA-256 Ledger Verifier</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: Security & Reliability -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">07 / Security</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">Enterprise-Grade Security</h2>
+      <p class="text-sm text-zinc-400 mb-8">Multi-layered security protocols ensuring tamper-proof identity and state protection.</p>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="p-6 rounded-3xl bg-zinc-900 border border-zinc-800">
+          <div class="text-emerald-400 font-mono text-xs font-bold mb-2">01 / PKCE OAUTH 2.0</div>
+          <h3 class="text-base font-bold text-white mb-2">Synced Cookie Storage</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Eliminated OAuth redirect loops by synchronizing PKCE code verifiers between client cookies and server-side Route Handlers.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-zinc-900 border border-zinc-800">
+          <div class="text-emerald-400 font-mono text-xs font-bold mb-2">02 / MIDDLEWARE GUARD</div>
+          <h3 class="text-base font-bold text-white mb-2">Strict Role Isolation</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Edge middleware validates session cookies on every request, ensuring freelancers cannot access client dashboards and vice versa.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-zinc-900 border border-zinc-800">
+          <div class="text-emerald-400 font-mono text-xs font-bold mb-2">03 / SHA-256 PROOF</div>
+          <h3 class="text-base font-bold text-white mb-2">Immutable Certificate Proof</h3>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Candidate certificates carry a cryptographic hash matching the state database to prevent fake degrees and credential forgery.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Socio-Economic Impact for Punjab -->
+    <div class="slide flex-col justify-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">08 / State Impact</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">Socio-Economic Impact for Punjab</h2>
+      <p class="text-sm text-zinc-400 mb-8">Aligning with Punjab Government's vision to empower local industry and retain digital talent.</p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+        <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-3xl font-black text-emerald-400 mb-1">100%</div>
+          <div class="text-xs font-bold text-white mb-1">Verified Credentials</div>
+          <p class="text-[11px] text-zinc-400">Directly authenticated via PSDM training centers across 23 districts.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-3xl font-black text-teal-400 mb-1">0%</div>
+          <div class="text-xs font-bold text-white mb-1">Payment Default Risk</div>
+          <p class="text-[11px] text-zinc-400">Escrow locking guarantees 100% payout upon client approval.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-3xl font-black text-blue-400 mb-1">15,000+</div>
+          <div class="text-xs font-bold text-white mb-1">MSMEs Targetable</div>
+          <p class="text-[11px] text-zinc-400">Connecting industrial hubs in Ludhiana, Amritsar, Mohali & Bathinda.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <div class="text-3xl font-black text-purple-400 mb-1">Reverse</div>
+          <div class="text-xs font-bold text-white mb-1">Brain Drain</div>
+          <p class="text-[11px] text-zinc-400">High-paying freelance gigs allowing youth to earn from their home towns.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Conclusion & Future Roadmap -->
+    <div class="slide flex-col justify-center items-center text-center w-full py-6">
+      <div class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">09 / Next Steps</div>
+      <h2 class="text-3xl sm:text-5xl font-black text-white mb-4">Conclusion & Future Roadmap</h2>
+      <p class="text-sm text-zinc-400 max-w-2xl mb-8 leading-relaxed">
+        TechPunjab bridges the gap between state-certified talent and industrial digitisation through smart, transparent software.
+      </p>
+
+      <div class="grid sm:grid-cols-3 gap-4 max-w-3xl w-full text-left mb-8">
+        <div class="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <span class="text-xs font-mono text-emerald-400 font-bold block mb-1">PHASE 2</span>
+          <h4 class="text-sm font-bold text-white mb-1">DigiLocker Integration</h4>
+          <p class="text-xs text-zinc-400">Direct instant API verification with national DigiLocker repository.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <span class="text-xs font-mono text-blue-400 font-bold block mb-1">PHASE 3</span>
+          <h4 class="text-sm font-bold text-white mb-1">Direct Bank Escrow</h4>
+          <p class="text-xs text-zinc-400">Live nodal escrow accounts partnering with State Bank of India & Punjab National Bank.</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
+          <span class="text-xs font-mono text-purple-400 font-bold block mb-1">PHASE 4</span>
+          <h4 class="text-sm font-bold text-white mb-1">Punjabi & Hindi UI</h4>
+          <p class="text-xs text-zinc-400">Multilingual localization for traditional factory owners & rural artisans.</p>
+        </div>
+      </div>
+
+      <div class="p-4 px-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-sm font-bold">
+        🎉 TechPunjab: Digital Skills • Safe Payments • Punjab Growth
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation Hints (No Print) -->
+  <footer class="no-print w-full px-6 py-3 border-t border-zinc-800/60 bg-zinc-900/30 text-center text-[11px] text-zinc-500 flex flex-wrap items-center justify-between">
+    <span>💡 Keyboard shortcuts: <strong>←</strong> / <strong>→</strong> (Navigate), <strong>Space</strong> (Next), <strong>Home</strong> (First Slide)</span>
+    <span>Punjab Skill Development Mission (PSDM) • TechPunjab Official Portal</span>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counterEl = document.getElementById('slideCounter');
+    const progressEl = document.getElementById('progressBar');
+
+    function updateSlide() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+          slide.classList.add('active');
+        } else {
+          slide.classList.remove('active');
+        }
+      });
+      counterEl.innerText = `Slide ${currentSlide + 1} / ${totalSlides}`;
+      progressEl.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      } else if (e.key === 'Home') {
+        currentSlide = 0;
+        updateSlide();
+      } else if (e.key === 'End') {
+        currentSlide = totalSlides - 1;
+        updateSlide();
+      }
+    });
+  </script>
+</body>
+</html>

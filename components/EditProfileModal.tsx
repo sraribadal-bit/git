@@ -60,9 +60,11 @@ export const EditProfileModal: React.FC = () => {
   // Sync state whenever modal opens or user/freelancer changes
   useEffect(() => {
     if (isProfileModalOpen) {
-      const initialName = currentUser?.name || freelancer.name || '';
+      const initialName = (currentUser?.name && currentUser.name !== 'Gurpreet Singh')
+        ? currentUser.name
+        : (freelancer.name && freelancer.name !== 'Gurpreet Singh' ? freelancer.name : 'Badal Srari');
       const initialAvatar = currentUser?.avatar || freelancer.avatar || PRESET_AVATARS[0].url;
-      const initialEmail = currentUser?.email || (role === 'freelancer' ? 'gurpreet.dev@gmail.com' : 'client@techpunjab.in');
+      const initialEmail = currentUser?.email || (role === 'freelancer' ? 'badalsrari@gmail.com' : 'client@techpunjab.in');
       
       setName(initialName);
       setAvatar(initialAvatar);
